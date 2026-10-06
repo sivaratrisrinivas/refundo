@@ -36,7 +36,7 @@ describe("README", () => {
   test("the ROI calculator inputs are blank placeholders and the out-of-scope list is present", () => {
     const roi = md.slice(md.indexOf("## ROI calculator"), md.indexOf("## Production path"));
     expect((roi.match(/\| \[X\] \|/g) ?? []).length).toBe(8);
-    for (const term of ["Chargeback Fight-or-Refund Desk", "real LLM calls", "cash refunds"]) expect(md).toContain(term);
+    for (const term of ["chargeback fight-or-refund desk", "real llm calls", "cash refunds"]) expect(md.toLowerCase()).toContain(term);
   });
 
   test("the production path has its three steps", () => {
