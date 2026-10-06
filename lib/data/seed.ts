@@ -14,10 +14,24 @@ const TABLES = [
   "audit_log", "outbox", "decisions", "eval_runs", "tickets", "checkpoints", "sessions", "accounts", "incidents", "bug_signatures",
 ];
 
-/** Remove every row (used by seed and by demo reset). */
+const AUDIT_TRIGGERS = [
+  "CREATE TRIGGER audit_log_no_update BEFORE UPDATE ON audit_log BEGIN SELECT RAISE(ABORT, 'audit_log is append-only'); END",
+  "CREATE TRIGGER audit_log_no_delete BEFORE DELETE ON audit_log BEGIN SELECT RAISE(ABORT, 'audit_log is append-only'); END",
+];
+
+/**
+ * Remove every row. Only demo reset and seeding call this: it briefly drops the
+ * audit triggers and puts them straight back, inside one transaction. No
+ * request path can reach it except the Reviewer/Lead-gated reset.
+ */
 export function clearAll(db: Db): void {
-  for (const t of TABLES) db.run(sql.raw(`delete from ${t}`));
-  db.run(sql.raw("delete from sqlite_sequence where name = 'audit_log'"));
+  db.transaction((tx) => {
+    tx.run(sql.raw("DROP TRIGGER IF EXISTS audit_log_no_update"));
+    tx.run(sql.raw("DROP TRIGGER IF EXISTS audit_log_no_delete"));
+    for (const t of TABLES) tx.run(sql.raw(`delete from ${t}`));
+    tx.run(sql.raw("delete from sqlite_sequence where name = 'audit_log'"));
+    for (const t of AUDIT_TRIGGERS) tx.run(sql.raw(t));
+  });
 }
 
 export function seedDb(db: Db, data: Dataset = loadDatasetFile()): void {

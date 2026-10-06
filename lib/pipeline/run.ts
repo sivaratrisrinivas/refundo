@@ -41,7 +41,7 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
   const base = {
     id: `D-${ticketId}`, ticketId, sessionId: c.session?.id ?? null, policyVersion: policy.version,
     modelName: deps.provider?.name ?? "rules-only", promptVersion: PROMPT_VERSION, approver: null, approvedAt: null,
-    overrideReason: null, overrides, createdAt: nowIso(), priorCredit: c.priorCredit,
+    overrideReason: [...overrides].reverse().find((o) => o.kind !== "reply")?.reason ?? null, overrides, createdAt: nowIso(), priorCredit: c.priorCredit,
   };
 
   // A missing Session needs a person.
