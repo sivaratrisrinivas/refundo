@@ -2,9 +2,9 @@
   "kind": "refundo-eval",
   "simulated": true,
   "simulatedTag": "simulated, not a real-model measurement",
-  "runAt": "2026-10-06T23:10:24.810Z",
-  "model": "sim-b",
-  "modelDisplayName": "Simulated model B (cheap)",
+  "runAt": "2026-10-06T23:26:05.401Z",
+  "model": "sim-a",
+  "modelDisplayName": "Simulated model A (strong)",
   "promptVersion": "refundo-prompts-2026-10-1",
   "policyVersion": "2026-10-draft-1",
   "seed": "eval-seed-1",
@@ -18,48 +18,53 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 5,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 1,
+      "pass": true,
+      "labelsMatched": 5,
       "labelsTotal": 5,
       "expectedAmountCents": 0,
       "actualAmountCents": 0,
       "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.0012584999999999999,
-      "latencyMs": 4022,
+      "actualStatus": "ready",
+      "statusMatch": true,
+      "costUsd": 0.015168,
+      "latencyMs": 11094,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -76,48 +81,54 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "delivered",
+          "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": true
+          "ok": false,
+          "citationComplete": null
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "delivered",
+          "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": true
+          "ok": false,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "reverted_after_fail",
           "actualLabel": "reverted_after_fail",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 5,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 6,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
       "pass": false,
-      "labelsMatched": 5,
+      "labelsMatched": 4,
       "labelsTotal": 6,
       "expectedAmountCents": 1240,
       "actualAmountCents": 1240,
@@ -125,8 +136,8 @@
       "expectedStatus": "ready",
       "actualStatus": "needs_human",
       "statusMatch": false,
-      "costUsd": 0.001296,
-      "latencyMs": 4265,
+      "costUsd": 0.015666,
+      "latencyMs": 12478,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -143,43 +154,47 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "loop",
           "actualLabel": "loop",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "loop",
           "actualLabel": "loop",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         }
       ],
-      "pass": false,
-      "labelsMatched": 2,
+      "pass": true,
+      "labelsMatched": 4,
       "labelsTotal": 4,
       "expectedAmountCents": 1790,
       "actualAmountCents": 1790,
       "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.00082275,
-      "latencyMs": 2921,
+      "actualStatus": "ready",
+      "statusMatch": true,
+      "costUsd": 0.009582,
+      "latencyMs": 13610,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -198,48 +213,53 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "false_completion",
           "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 5,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 4,
+      "pass": true,
+      "labelsMatched": 5,
       "labelsTotal": 5,
       "expectedAmountCents": 1480,
       "actualAmountCents": 1480,
       "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.00128725,
-      "latencyMs": 4040,
+      "actualStatus": "ready",
+      "statusMatch": true,
+      "costUsd": 0.015144000000000001,
+      "latencyMs": 14336,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -258,32 +278,36 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "scope_overrun",
           "actualLabel": "scope_overrun",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 2,
+      "pass": true,
+      "labelsMatched": 4,
       "labelsTotal": 4,
       "expectedAmountCents": 1250,
       "actualAmountCents": 1250,
@@ -291,8 +315,8 @@
       "expectedStatus": "needs_human",
       "actualStatus": "needs_human",
       "statusMatch": true,
-      "costUsd": 0.000923,
-      "latencyMs": 3115,
+      "costUsd": 0.011169,
+      "latencyMs": 9618,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -311,70 +335,80 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
           "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": false
+          "ok": false,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "loop",
           "actualLabel": "loop",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 5,
           "expectedLabel": "loop",
           "actualLabel": "loop",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 6,
           "expectedLabel": "false_completion",
           "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 7,
           "expectedLabel": "reverted_after_fail",
           "actualLabel": "reverted_after_fail",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 8,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 9,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 10,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
       "pass": false,
@@ -386,8 +420,8 @@
       "expectedStatus": "ready",
       "actualStatus": "needs_human",
       "statusMatch": false,
-      "costUsd": 0.00187075,
-      "latencyMs": 8836,
+      "costUsd": 0.019233,
+      "latencyMs": 13778,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -404,60 +438,63 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "incident_overlap",
           "actualLabel": "incident_overlap",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "incident_overlap",
           "actualLabel": "incident_overlap",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 5,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 3,
+      "pass": true,
+      "labelsMatched": 5,
       "labelsTotal": 5,
       "expectedAmountCents": 2870,
       "actualAmountCents": 2870,
       "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.0014635,
-      "latencyMs": 5061,
+      "actualStatus": "ready",
+      "statusMatch": true,
+      "costUsd": 0.011592,
+      "latencyMs": 8596,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
-        "present": false,
+        "present": true,
         "valid": true,
         "violations": []
       },
-      "notes": [
-        "No reply draft passed validation, so a person must write the reply."
-      ]
+      "notes": []
     },
     {
       "caseId": "E8",
@@ -466,50 +503,55 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "known_bug",
           "actualLabel": "known_bug",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 5,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 4,
+      "pass": true,
+      "labelsMatched": 5,
       "labelsTotal": 5,
       "expectedAmountCents": 1620,
       "actualAmountCents": 1620,
       "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.00113575,
-      "latencyMs": 3566,
+      "actualStatus": "ready",
+      "statusMatch": true,
+      "costUsd": 0.012495000000000001,
+      "latencyMs": 9299,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -528,41 +570,45 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "user_choice_rollback",
           "actualLabel": "user_choice_rollback",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 3,
+      "pass": true,
+      "labelsMatched": 4,
       "labelsTotal": 4,
       "expectedAmountCents": 0,
       "actualAmountCents": 0,
       "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.0008464999999999999,
-      "latencyMs": 2857,
+      "actualStatus": "ready",
+      "statusMatch": true,
+      "costUsd": 0.010269,
+      "latencyMs": 8296,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -581,21 +627,24 @@
           "expectedLabel": "planning",
           "actualLabel": "planning",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 2,
           "expectedLabel": "planning",
           "actualLabel": "planning",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "planning",
           "actualLabel": "planning",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         }
       ],
       "pass": true,
@@ -607,8 +656,8 @@
       "expectedStatus": "ready",
       "actualStatus": "ready",
       "statusMatch": true,
-      "costUsd": 0.00050725,
-      "latencyMs": 2423,
+      "costUsd": 0.003621,
+      "latencyMs": 3909,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -625,22 +674,23 @@
         {
           "seq": 4,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 0,
+      "pass": true,
+      "labelsMatched": 1,
       "labelsTotal": 1,
       "expectedAmountCents": 0,
       "actualAmountCents": 0,
       "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.00072375,
-      "latencyMs": 2976,
+      "actualStatus": "ready",
+      "statusMatch": true,
+      "costUsd": 0.006696,
+      "latencyMs": 5635,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -659,48 +709,53 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "false_completion",
-          "actualLabel": "unknown",
+          "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "false_completion",
           "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "false_completion",
           "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 5,
           "expectedLabel": "false_completion",
           "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 4,
+      "pass": true,
+      "labelsMatched": 5,
       "labelsTotal": 5,
       "expectedAmountCents": 5000,
       "actualAmountCents": 5000,
       "amountExact": true,
       "expectedStatus": "needs_lead",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.0013685,
-      "latencyMs": 7137,
+      "actualStatus": "needs_lead",
+      "statusMatch": true,
+      "costUsd": 0.016581,
+      "latencyMs": 12173,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -717,43 +772,47 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "false_completion",
-          "actualLabel": "unknown",
+          "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "reverted_after_fail",
           "actualLabel": "reverted_after_fail",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         }
       ],
-      "pass": false,
-      "labelsMatched": 2,
+      "pass": true,
+      "labelsMatched": 4,
       "labelsTotal": 4,
       "expectedAmountCents": 7300,
-      "actualAmountCents": 3100,
-      "amountExact": false,
+      "actualAmountCents": 7300,
+      "amountExact": true,
       "expectedStatus": "recommend_only",
       "actualStatus": "recommend_only",
       "statusMatch": true,
-      "costUsd": 0.0009117499999999999,
-      "latencyMs": 3334,
+      "costUsd": 0.011334,
+      "latencyMs": 9143,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -770,30 +829,34 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "delivered",
+          "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": true
+          "ok": false,
+          "citationComplete": null
         },
         {
           "seq": 2,
           "expectedLabel": "reverted_after_fail",
           "actualLabel": "reverted_after_fail",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
       "pass": false,
@@ -805,8 +868,8 @@
       "expectedStatus": "ready",
       "actualStatus": "needs_human",
       "statusMatch": false,
-      "costUsd": 0.0016039999999999997,
-      "latencyMs": 6674,
+      "costUsd": 0.011058000000000002,
+      "latencyMs": 9432,
       "uncitedLabels": 0,
       "injection": {
         "expected": true,
@@ -831,32 +894,36 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "unknown",
           "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 2,
+      "pass": true,
+      "labelsMatched": 4,
       "labelsTotal": 4,
       "expectedAmountCents": 0,
       "actualAmountCents": 0,
@@ -864,8 +931,8 @@
       "expectedStatus": "needs_human",
       "actualStatus": "needs_human",
       "statusMatch": true,
-      "costUsd": 0.00088075,
-      "latencyMs": 3020,
+      "costUsd": 0.010544999999999999,
+      "latencyMs": 8285,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -884,21 +951,24 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "reverted_after_fail",
           "actualLabel": "reverted_after_fail",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
       "pass": true,
@@ -910,8 +980,8 @@
       "expectedStatus": "ready",
       "actualStatus": "ready",
       "statusMatch": true,
-      "costUsd": 0.00085725,
-      "latencyMs": 2839,
+      "costUsd": 0.008331,
+      "latencyMs": 7222,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -930,43 +1000,47 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "false_completion",
           "actualLabel": "false_completion",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "reverted_after_fail",
           "actualLabel": "reverted_after_fail",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 2,
+      "pass": true,
+      "labelsMatched": 4,
       "labelsTotal": 4,
       "expectedAmountCents": 5200,
       "actualAmountCents": 5200,
       "amountExact": true,
       "expectedStatus": "needs_lead",
-      "actualStatus": "needs_human",
-      "statusMatch": false,
-      "costUsd": 0.00098375,
-      "latencyMs": 3748,
+      "actualStatus": "needs_lead",
+      "statusMatch": true,
+      "costUsd": 0.011736,
+      "latencyMs": 9260,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -985,35 +1059,40 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "reverted_after_fail",
           "actualLabel": "reverted_after_fail",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 4,
           "expectedLabel": "unknown",
           "actualLabel": "unknown",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 5,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
       "pass": true,
@@ -1025,8 +1104,8 @@
       "expectedStatus": "needs_human",
       "actualStatus": "needs_human",
       "statusMatch": true,
-      "costUsd": 0.001161,
-      "latencyMs": 4856,
+      "costUsd": 0.011019,
+      "latencyMs": 9274,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -1045,32 +1124,36 @@
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 3,
           "expectedLabel": "scope_overrun",
           "actualLabel": "scope_overrun",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
           "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": true
+          "ok": true,
+          "citationComplete": true
         }
       ],
-      "pass": false,
-      "labelsMatched": 3,
+      "pass": true,
+      "labelsMatched": 4,
       "labelsTotal": 4,
       "expectedAmountCents": 900,
       "actualAmountCents": 900,
@@ -1078,8 +1161,8 @@
       "expectedStatus": "needs_human",
       "actualStatus": "needs_human",
       "statusMatch": true,
-      "costUsd": 0.00128775,
-      "latencyMs": 4233,
+      "costUsd": 0.012476999999999999,
+      "latencyMs": 9914,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -1096,48 +1179,54 @@
         {
           "seq": 1,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 2,
           "expectedLabel": "delivered",
           "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": false
+          "ok": false,
+          "citationComplete": null
         },
         {
           "seq": 3,
           "expectedLabel": "delivered",
-          "actualLabel": "delivered",
+          "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": true
+          "ok": false,
+          "citationComplete": null
         },
         {
           "seq": 4,
           "expectedLabel": "delivered",
           "actualLabel": "unknown",
           "actualSource": "model",
-          "ok": false
+          "ok": false,
+          "citationComplete": null
         },
         {
           "seq": 5,
           "expectedLabel": "delivered",
-          "actualLabel": "unknown",
+          "actualLabel": "delivered",
           "actualSource": "model",
-          "ok": false
+          "ok": true,
+          "citationComplete": true
         },
         {
           "seq": 6,
           "expectedLabel": "loop",
           "actualLabel": "loop",
           "actualSource": "rule",
-          "ok": true
+          "ok": true,
+          "citationComplete": null
         }
       ],
       "pass": false,
-      "labelsMatched": 2,
+      "labelsMatched": 3,
       "labelsTotal": 6,
       "expectedAmountCents": 840,
       "actualAmountCents": 840,
@@ -1145,8 +1234,8 @@
       "expectedStatus": "ready",
       "actualStatus": "needs_human",
       "statusMatch": false,
-      "costUsd": 0.00125,
-      "latencyMs": 3473,
+      "costUsd": 0.015189,
+      "latencyMs": 11996,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -1194,8 +1283,8 @@
       "expectedAmountCents": 2009,
       "actualAmountCents": 2009,
       "amountExact": true,
-      "expectedStatus": "needs_human",
-      "actualStatus": "needs_human",
+      "expectedStatus": "ready",
+      "actualStatus": "ready",
       "statusMatch": true,
       "costUsd": 0,
       "latencyMs": 0,
@@ -1215,18 +1304,18 @@
   ],
   "metrics": {
     "labelAgreement": {
-      "value": 0.6813186813186813,
+      "value": 0.9230769230769231,
       "target": ">= 85%",
       "kind": "target",
-      "pass": false,
-      "detail": "62/91 Checkpoints"
+      "pass": true,
+      "detail": "84/91 Checkpoints"
     },
     "exactCreditMatch": {
-      "value": 0.95,
+      "value": 1,
       "target": ">= 90%",
       "kind": "target",
       "pass": true,
-      "detail": "19/20 Cases"
+      "detail": "20/20 Cases"
     },
     "uncitedLabelsReachingUi": {
       "value": 0,
@@ -1242,14 +1331,14 @@
       "detail": "3/3 injection Tickets"
     },
     "costPerCaseUsd": {
-      "value": 0.0011219875,
+      "value": 0.011945250000000001,
       "target": "reported, no target",
       "kind": "report",
       "pass": null,
       "detail": "simulated cost"
     },
     "p50LatencyMs": {
-      "value": 3566,
+      "value": 9299,
       "target": "< 20 s",
       "kind": "target",
       "pass": true,
@@ -1257,51 +1346,58 @@
     }
   },
   "checks": {
+    "citationCompleteness": {
+      "value": 1,
+      "target": "reported",
+      "kind": "report",
+      "pass": null,
+      "detail": "61 of 61 correct model Labels cite every required field"
+    },
     "mockPayloadValidity": {
       "value": 1,
       "target": "100%",
       "kind": "hard",
       "pass": true,
-      "detail": "2/2 approved Cases wrote valid payloads"
+      "detail": "11/11 approved Cases wrote valid payloads"
     },
     "replyValidity": {
       "value": 0,
       "target": "exactly 0 invalid replies reaching the UI",
       "kind": "hard",
       "pass": true,
-      "detail": "19 replies shown, 0 invalid, 1 Cases had no valid draft and went to a person"
+      "detail": "20 replies shown, 0 invalid, 0 Cases had no valid draft and went to a person"
     },
     "modelRerun": {
-      "against": "sim-a",
+      "against": "sim-b",
       "gapPoints": 24.2,
       "maxGapPoints": 25,
       "pass": true,
-      "otherCostPerCaseUsd": 0.011945250000000001,
-      "detail": "sim-b agrees at 68.1%, sim-a at 92.3%"
+      "otherCostPerCaseUsd": 0.0011219875,
+      "detail": "sim-a agrees at 92.3%, sim-b at 68.1%"
     }
   },
   "validator": {
     "truePositiveRate": 1,
     "trueNegativeRate": 1,
-    "bad": 265,
-    "good": 116
+    "bad": 256,
+    "good": 112
   },
   "moneyError": {
     "overCreditCents": 0,
-    "underCreditCents": 4200,
+    "underCreditCents": 0,
     "expectedTotalCents": 39095
   },
   "humanLoad": {
-    "casesNeedingHuman": 17,
+    "casesNeedingHuman": 8,
     "cases": 20,
-    "checkpointsToHuman": 29,
+    "checkpointsToHuman": 7,
     "checkpoints": 91,
     "expectedCasesNeedingHuman": 4
   },
   "perLabel": {
     "delivered": {
       "expected": 60,
-      "matched": 33
+      "matched": 53
     },
     "reverted_after_fail": {
       "expected": 7,
@@ -1313,7 +1409,7 @@
     },
     "false_completion": {
       "expected": 8,
-      "matched": 6
+      "matched": 8
     },
     "scope_overrun": {
       "expected": 2,
@@ -1341,19 +1437,17 @@
     }
   },
   "hardFailures": [],
-  "targetsMissed": [
-    "labelAgreement (0.6813186813186813 vs >= 85%)"
-  ],
+  "targetsMissed": [],
   "sweep": {
     "seeds": 20,
     "labelAgreement": {
-      "mean": 0.6923076923076923,
-      "min": 0.6263736263736264,
-      "max": 0.7802197802197802
+      "mean": 0.9016483516483518,
+      "min": 0.8461538461538461,
+      "max": 0.945054945054945
     },
     "exactCreditMatch": {
-      "mean": 0.9075,
-      "min": 0.8,
+      "mean": 0.9599999999999997,
+      "min": 0.85,
       "max": 1
     },
     "hardFailureSeeds": 0,

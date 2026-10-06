@@ -9,6 +9,7 @@ import { LABEL_TEXT } from "@/lib/pipeline/label-text";
 import { cn } from "@/lib/ui/cn";
 import { ageLabel, usd } from "@/lib/ui/format";
 import { SHORTCUT_HELP, shortcutAction } from "@/lib/ui/shortcuts";
+import { MODEL_LABEL, MODEL_LETTER } from "@/lib/models/types";
 import { LabelChip, ModeBadge, SourceBadge } from "./chips";
 
 type Msg = { kind: "ok" | "error"; text: string } | null;
@@ -268,8 +269,8 @@ export function CaseView({ view }: { view: View }) {
             Approve {usd(d.amountCents)}
           </button>
           {canRun && (["sim-a", "sim-b"] as const).map((m) => (
-            <button key={m} disabled={busy} onClick={() => act(() => post(`/api/cases/${view.ticket.id}/run`, { model: m }), `Re-ran with ${m === "sim-a" ? "Simulated model A" : "Simulated model B"}.`)} className="rounded border border-[var(--line)] px-2 py-1 text-xs hover:bg-[var(--bg)] disabled:opacity-50">
-              Re-run with model {m === "sim-a" ? "A" : "B"}
+            <button key={m} disabled={busy} onClick={() => act(() => post(`/api/cases/${view.ticket.id}/run`, { model: m }), `Re-ran with ${MODEL_LABEL[m]}.`)} className="rounded border border-[var(--line)] px-2 py-1 text-xs hover:bg-[var(--bg)] disabled:opacity-50">
+              Re-run with model {MODEL_LETTER[m]}
             </button>
           ))}
         </div>

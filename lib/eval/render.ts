@@ -36,6 +36,7 @@ export function renderResults(reports: Partial<Record<ModelName, EvalReport>>): 
     ["Money error: over-credited / under-credited", (r) => `${usd(r.moneyError.overCreditCents)} / ${usd(r.moneyError.underCreditCents)} of ${usd(r.moneyError.expectedTotalCents)} expected`],
     ["Human load: Cases that need a person", (r) => `${r.humanLoad.casesNeedingHuman} of ${r.humanLoad.cases} (${r.humanLoad.expectedCasesNeedingHuman} by design)`],
     ["Checkpoints sent to a person that the rubric settles", (r) => `${r.humanLoad.checkpointsToHuman} of ${r.humanLoad.checkpoints}`],
+    ["Correct model Labels citing every required field", (r) => (r.checks.citationCompleteness ? r.checks.citationCompleteness.detail.replace(" correct model Labels cite every required field", "") : "n/a")],
     ["Reply validator on a labeled set: true positive / true negative", (r) => `${pct(r.validator.truePositiveRate, 0)} of ${r.validator.bad} bad / ${pct(r.validator.trueNegativeRate, 0)} of ${r.validator.good} good`],
   ];
   const lines = [

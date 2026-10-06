@@ -63,10 +63,24 @@ export function toLabelInput(
   };
 }
 
+/** The only Labels a model may propose. Everything else is settled by rules, or by a person. */
+const MODEL_LABELS = new Set<string>(["delivered", "false_completion", "unknown"]);
+
+/** A cited field must exist on the Checkpoint with something in it: citing `rolledBackAt` on a Checkpoint never rolled back is invalid. */
+export function fieldPresent(cp: Checkpoint, field: string): boolean {
+  const v = (cp as unknown as Record<string, unknown>)[field];
+  if (v === null || v === undefined || v === "") return false;
+  if (Array.isArray(v)) return v.length > 0;
+  if (field === "appTest") return (v as Checkpoint["appTest"]).ran;
+  if (field === "linesAdded" || field === "linesRemoved") return (v as number) > 0;
+  return true;
+}
+
 const CHECKPOINT_FIELDS = new Set<string>(VALID_EVIDENCE.filter((f) => f !== "incident" && f !== "bug_signature"));
 
 export const UNCITED_PROMPT = "The model's Label cited evidence that does not exist on this Checkpoint. Choose a Label and give a reason.";
 export const LOW_CONFIDENCE_PROMPT = "The model was not confident enough to decide this Checkpoint. Choose a Label and give a reason.";
+export const RULE_ONLY_PROMPT = "Only a rule or a person can decide this Label; the model may only say delivered, false completion or unknown. Choose a Label and give a reason.";
 export const FAILED_TEST_PROMPT = "A test failed on this Checkpoint but the model said it was delivered. Choose a Label and give a reason.";
 export const WEAK_EVIDENCE_PROMPT = "The model called this a false completion on file evidence alone (no failed test). Confirm or choose another Label, with a reason.";
 export const CONFLICT_PROMPT = "The model's Label disagrees with the claim evidence. Choose a Label and give a reason.";
@@ -79,7 +93,7 @@ export const CONFLICT_PROMPT = "The model's Label disagrees with the claim evide
  */
 export function validateModelLabel(
   raw: LabelOutput[number], claims: VerifyOutput[number]["claims"] | undefined, minConfidence: number,
-  cp?: { appTestPassed: boolean | null },
+  cp?: Checkpoint,
 ): LabelRecord {
   const base: CheckpointLabel = {
     checkpointId: raw.checkpointId, label: raw.label, evidenceFields: raw.evidenceFields as EvidenceField[],
@@ -92,7 +106,13 @@ export function validateModelLabel(
   if (raw.label === "unknown") {
     return { ...base, evidenceFields: [], humanPrompt: "No evidence settles this Checkpoint. Choose a Label and give a reason." };
   }
-  if (raw.evidenceFields.length === 0 || raw.evidenceFields.some((f) => !CHECKPOINT_FIELDS.has(f))) {
+  if (!MODEL_LABELS.has(raw.label)) {
+    return unknown(RULE_ONLY_PROMPT, `model proposed ${raw.label}, which only rules or people decide`);
+  }
+  if (
+    raw.evidenceFields.length === 0 ||
+    raw.evidenceFields.some((f) => !CHECKPOINT_FIELDS.has(f) || (cp !== undefined && !fieldPresent(cp, f)))
+  ) {
     return unknown(UNCITED_PROMPT, `model proposed ${raw.label} with ${raw.evidenceFields.length === 0 ? "no citation" : "an invalid citation"}`);
   }
   if (raw.confidence < minConfidence) {
@@ -105,10 +125,10 @@ export function validateModelLabel(
   // Guards found by error analysis (docs/eval/failure-modes.md), based on Checkpoint fields, not on the model's reasoning:
   // a model may not call a Checkpoint delivered over a failed test, and a false completion that rests on missing files
   // alone, with no failed test, is confirmed by a person before it moves money.
-  if (cp && raw.label === "delivered" && cp.appTestPassed === false) {
+  if (cp && raw.label === "delivered" && cp.appTest.passed === false) {
     return unknown(FAILED_TEST_PROMPT, "model proposed delivered but a test failed on this Checkpoint");
   }
-  if (cp && raw.label === "false_completion" && cp.appTestPassed !== false) {
+  if (cp && raw.label === "false_completion" && cp.appTest.passed !== false) {
     return unknown(WEAK_EVIDENCE_PROMPT, "model proposed false_completion on file evidence only, with no failed test");
   }
   return base;

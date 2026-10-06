@@ -13,7 +13,7 @@ import { seededDb } from "./helpers";
 
 const targets = loadExpected().targets;
 
-const cp = (ok: boolean) => ({ seq: 1, expectedLabel: "delivered", actualLabel: ok ? "delivered" : "unknown", actualSource: "model", ok });
+const cp = (ok: boolean) => ({ seq: 1, expectedLabel: "delivered", actualLabel: ok ? "delivered" : "unknown", actualSource: "model", ok, citationComplete: null });
 const sess = (over: Partial<SessionResult> = {}): SessionResult => ({
   caseId: "X", title: "t", pass: true, checkpoints: [cp(true)], labelsMatched: 1, labelsTotal: 1, expectedAmountCents: 100, actualAmountCents: 100,
   amountExact: true, expectedStatus: "ready", actualStatus: "ready", statusMatch: true, costUsd: 0.01, latencyMs: 1000, uncitedLabels: 0,

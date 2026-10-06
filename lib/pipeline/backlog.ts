@@ -9,7 +9,7 @@ export interface BacklogItem {
 }
 
 /**
- * Overrides, in order, as eval cases waiting to be reviewed: this is how a
+ * Overrides, in order, as Graded-session candidates waiting for review: this is how a
  * production version would grow its test set. Derived from the audit log, so it
  * cannot drift from what actually happened.
  */

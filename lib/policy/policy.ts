@@ -50,6 +50,7 @@ export interface Policy {
   clauses: Record<ClauseId, ClauseRule>;
   capsCents: { core: number; pro: number };
   chargebackMaxMultiplier: number;
+  chargebackNeedsLead: boolean;
   minConfidence: number;
   creditForm: string;
   medianFiles: Record<RequestClass, number>;
@@ -83,6 +84,7 @@ export function parsePolicy(yamlText: string): Policy {
       pro: Math.round(raw.caps_30d_usd.pro * 100),
     },
     chargebackMaxMultiplier: raw.chargeback_bump.max_multiplier,
+    chargebackNeedsLead: raw.chargeback_bump.needs_lead_approval,
     minConfidence: raw.min_confidence,
     creditForm: raw.credit_form,
     medianFiles: raw.median_files,

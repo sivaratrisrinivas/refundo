@@ -1,4 +1,4 @@
-import { and, asc, eq, ne } from "drizzle-orm";
+import { and, asc, eq, gt, ne } from "drizzle-orm";
 import type { Db } from "@/lib/db/client";
 import { schema } from "@/lib/db/client";
 import type { Checkpoint } from "@/lib/policy/types";
@@ -44,6 +44,7 @@ export function assembleCase(db: Db, ticketId: string): CaseData | null {
           and(
             eq(schema.decisions.sessionId, session.id),
             eq(schema.decisions.status, "approved"),
+            gt(schema.decisions.amountCents, 0), // only an earlier Credit counts; a $0 closure did not credit the Session
             ne(schema.decisions.ticketId, ticketId),
           ),
         )

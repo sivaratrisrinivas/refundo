@@ -10,8 +10,8 @@ export type ReplyViolationKind =
 export interface ReplyViolation { kind: ReplyViolationKind; detail: string }
 
 const MAX_WORDS = 180;
-const CASH = /\b(?:refunds?|refunded|cash|money back|reimburs\w*|back to your card|to your card|bank account|chargebacks?|wire transfer|paypal|original payment)\b/i;
-const FAULT = /\b(?:our fault|my fault|we (?:were|are) (?:at fault|wrong|to blame)|we messed up|this was (?:our|my) (?:fault|mistake|error)|we take (?:full )?responsibility|we are responsible|we admit)\b/i;
+export const CASH = /\b(?:refunds?|refunded|cash|money back|reimburs\w*|back to your card|to your card|bank account|chargebacks?|wire transfer|paypal|original payment)\b/i;
+export const FAULT = /\b(?:our fault|my fault|we (?:were|are) (?:at fault|wrong|to blame)|we messed up|this was (?:our|my) (?:fault|mistake|error)|we take (?:full )?responsibility|we are responsible|we admit)\b/i;
 const PROMISE = /\b(?:we will make sure|i will make sure|we'?ll make sure|guarantee\w*|i promise|we promise|never happen again|you will receive|you'?ll receive|will be credited|will be refunded|we will ensure|we'?ll ensure|will definitely)\b/i;
 
 export function buildReplyDecision(c: CaseData, d: DecisionRecord): ReplyDecision {

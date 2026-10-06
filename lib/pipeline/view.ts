@@ -74,13 +74,13 @@ const REAL_FIELDS = new Set<string>(VALID_EVIDENCE);
 
 /**
  * Last line of defence before the UI: a Label from a model that cites nothing, or
- * cites a field that does not exist, is shown as `unknown`, never as a verdict.
+ * cites a field that does not exist, is shown as `unknown`, never as a Label.
  */
 export function renderableLabel(l: LabelRecord): LabelRecord {
   if (l.source === "model" && l.label !== "unknown") {
     const bad = l.evidenceFields.length === 0 || l.evidenceFields.some((f) => !REAL_FIELDS.has(f));
     if (bad) {
-      return { ...l, label: "unknown", evidenceFields: [], humanPrompt: "The model's citation was invalid, so no verdict is shown. Choose a Label and give a reason." };
+      return { ...l, label: "unknown", evidenceFields: [], humanPrompt: "The model's citation was invalid, so no Label is shown. Choose a Label and give a reason." };
     }
   }
   return l;

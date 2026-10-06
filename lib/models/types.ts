@@ -125,6 +125,13 @@ export interface ModelProvider {
 
 export type ModelName = "sim-a" | "sim-b";
 export const MODEL_NAMES: ModelName[] = ["sim-a", "sim-b"];
+export const MODEL_LABEL: Record<ModelName, string> = { "sim-a": "Simulated model A (strong)", "sim-b": "Simulated model B (cheap)" };
+export const MODEL_LETTER: Record<ModelName, "A" | "B"> = { "sim-a": "A", "sim-b": "B" };
+
+/** Anything that is not a known Simulated model name falls back to model A. */
+export function parseModelName(x: unknown): ModelName {
+  return MODEL_NAMES.includes(x as ModelName) ? (x as ModelName) : "sim-a";
+}
 
 export const VALID_EVIDENCE: EvidenceField[] = [
   "id", "sessionId", "seq", "ts", "mode", "model", "reasoningEffort", "costCents",

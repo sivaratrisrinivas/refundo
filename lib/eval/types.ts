@@ -8,6 +8,8 @@ export interface CheckpointResult {
   actualLabel: string; // "unresolved" when no Label was settled
   actualSource: string | null;
   ok: boolean;
+  /** For a correct model Label: did it cite every field the expected answer says it must? null when not applicable. */
+  citationComplete: boolean | null;
 }
 
 export interface SessionResult {
@@ -61,6 +63,8 @@ export interface EvalReport {
     p50LatencyMs: Metric;
   };
   checks: {
+    /** Correct model Labels that cite every required field, over all correct model Labels with required fields. */
+    citationCompleteness: Metric & { detail: string };
     mockPayloadValidity: Metric & { detail: string };
     replyValidity: Metric & { detail: string };
     modelRerun?: { against: ModelName; gapPoints: number; maxGapPoints: number; pass: boolean; otherCostPerCaseUsd: number; detail: string };

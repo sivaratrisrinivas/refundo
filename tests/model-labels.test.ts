@@ -282,3 +282,50 @@ describe("settling one Checkpoint does not reshuffle the model's other answers",
     expect(fresh.modelName).toBe("sim-a");
   });
 });
+
+describe("what a model may say", () => {
+  const labelRewrite = (to: string, cite: string[]) => (task: Task, out: unknown) =>
+    task === "label" ? (out as { checkpointId: string }[]).map((l) => (l.checkpointId === "S-E1-c1" ? { ...l, label: to, evidenceFields: cite, confidence: 0.95 } : l)) : out;
+
+  test("a model may not decide a Label that only rules or people decide", async () => {
+    for (const bad of ["loop", "known_bug", "incident_overlap", "reverted_after_fail", "scope_overrun", "planning", "user_choice_rollback"]) {
+      const d = await runCase(seededDb(), caseOf("E1").ticketId, { provider: new Scripted(perfect, labelRewrite(bad, ["filesChanged"])) });
+      const l = labelFor(d, caseOf("E1"), 1)!;
+      expect([bad, l.label]).toEqual([bad, "unknown"]);
+      expect(l.humanPrompt).toMatch(/Only a rule or a person/);
+      expect(d.amountCents).toBe(0);
+    }
+  });
+
+  test("a cited field must be present on the Checkpoint, not just a real field name", async () => {
+    // E1 Checkpoint 1 was never rolled back and has no error text.
+    for (const field of ["rolledBackAt", "errorText", "errorSignature"]) {
+      const d = await runCase(seededDb(), caseOf("E1").ticketId, { provider: new Scripted(perfect, labelRewrite("delivered", ["filesChanged", field])) });
+      expect([field, labelFor(d, caseOf("E1"), 1)!.label]).toEqual([field, "unknown"]);
+    }
+    const ok = await runCase(seededDb(), caseOf("E1").ticketId, { provider: new Scripted(perfect, labelRewrite("delivered", ["filesChanged", "agentClaimText"])) });
+    expect(labelFor(ok, caseOf("E1"), 1)!.label).toBe("delivered");
+  });
+
+  test("a duplicate Ticket on an Enterprise account stays recommendation-only", async () => {
+    const db = seededDb();
+    const { saveDecision } = await import("@/lib/pipeline/store");
+    const d0 = await runCase(db, "T-E13", { provider: perfect });
+    saveDecision(db, { ...d0 });
+    // pretend an earlier Credit exists on the same Session
+    const { schema } = await import("@/lib/db/client");
+    db.insert(schema.decisions).values({ id: "D-old", ticketId: "T-old", sessionId: "S-E13", labels: [], clauses: [], lines: [], amountCents: 500, capStatus: "within_cap", status: "approved", approver: "lead", policyVersion: "v", modelName: "seed", promptVersion: "seed", notes: [], createdAt: "2026-09-01T00:00:00Z", approvedAt: "2026-09-01T00:00:00Z" }).run();
+    const d = await runCase(db, "T-E13", { provider: perfect, refresh: true });
+    expect(d.status).toBe("recommend_only");
+    expect(d.priorCredit).not.toBeNull();
+  });
+
+  test("an earlier $0 closure is not a prior Credit", async () => {
+    const db = seededDb();
+    const { schema } = await import("@/lib/db/client");
+    db.insert(schema.decisions).values({ id: "D-zero", ticketId: "T-zero", sessionId: "S-E2", labels: [], clauses: [], lines: [], amountCents: 0, capStatus: "within_cap", status: "approved", approver: "lead", policyVersion: "v", modelName: "seed", promptVersion: "seed", notes: [], createdAt: "2026-09-01T00:00:00Z", approvedAt: "2026-09-01T00:00:00Z" }).run();
+    const d = await runCase(db, "T-E2", { provider: perfect });
+    expect(d.priorCredit).toBeNull();
+    expect(d.amountCents).toBe(1240);
+  });
+});

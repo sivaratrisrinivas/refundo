@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import { ResetDemoButton } from "@/components/ResetDemoButton";
 import { PERSONA_COOKIE } from "@/lib/auth/cookies";
-import { can, isPersona } from "@/lib/auth/personas";
+import { can, personaOrDefault } from "@/lib/auth/personas";
 import { appDb } from "@/lib/db/app-db";
 import { listOutbox, type OutboxRow } from "@/lib/db/systems";
 
@@ -28,7 +28,7 @@ type Lin = { body: { variables: { input: { title: string; description: string; l
 
 export default async function SystemsPage() {
   const raw = (await cookies()).get(PERSONA_COOKIE)?.value;
-  const persona = isPersona(raw) ? raw : "specialist";
+  const persona = personaOrDefault(raw);
   const db = appDb();
   const orb = listOutbox(db, "orb");
   const zd = listOutbox(db, "zendesk");

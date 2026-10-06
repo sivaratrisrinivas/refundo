@@ -8,7 +8,7 @@ import { createTestDb } from "@/lib/db/client";
 import { getProvider, PROMPT_VERSION, type ModelName } from "@/lib/models";
 import { approveDecision } from "@/lib/pipeline/approve";
 import { assembleCase } from "@/lib/pipeline/assemble";
-import { buildReplyDecision, validateReply } from "@/lib/pipeline/reply";
+import { buildReplyDecision, CASH, FAULT, validateReply } from "@/lib/pipeline/reply";
 import { buildLabeledReplySet } from "@/lib/pipeline/reply-validator-set";
 import { runCase, type RunDeps } from "@/lib/pipeline/run";
 import { loadDecision } from "@/lib/pipeline/store";
@@ -51,8 +51,6 @@ export interface EvalOptions {
 }
 
 const REAL_FIELDS = new Set<string>(VALID_EVIDENCE.filter((f) => f !== "incident" && f !== "bug_signature"));
-const CASH = /refund|cash|money back|reimburs/i;
-const FAULT = /our fault|my fault|we messed up|take responsibility/i;
 
 function uncited(d: DecisionRecord): number {
   return d.labels.filter((l) => l.source === "model" && l.label !== "unknown" && (l.evidenceFields.length === 0 || l.evidenceFields.some((f) => !REAL_FIELDS.has(f)))).length;
@@ -79,7 +77,10 @@ export async function runEval(opts: EvalOptions): Promise<EvalReport> {
     const checkpoints = s.checkpoints.filter((c) => !c.excluded).map((c) => {
       const l = byCp.get(`${s.sessionId}-c${c.seq}`);
       const actual = l?.label ?? "unresolved";
-      return { seq: c.seq, expectedLabel: c.label!, actualLabel: actual, actualSource: l?.source ?? null, ok: actual === c.label };
+      const ok = actual === c.label;
+      const mustCite = c.mustCite ?? [];
+      const citationComplete = ok && l?.source === "model" && mustCite.length > 0 ? mustCite.every((f) => (l.evidenceFields as string[]).includes(f)) : null;
+      return { seq: c.seq, expectedLabel: c.label!, actualLabel: actual, actualSource: l?.source ?? null, ok, citationComplete };
     });
     const c = assembleCase(db, s.ticketId)!;
     const rd = buildReplyDecision(c, d);
@@ -159,6 +160,7 @@ export async function runEval(opts: EvalOptions): Promise<EvalReport> {
     model: opts.model, modelDisplayName: provider.displayName, promptVersion: PROMPT_VERSION, policyVersion: policy.version, seed,
     sessions, metrics,
     checks: {
+      citationCompleteness: citationMetric(graded),
       mockPayloadValidity: {
         value: mock.approved ? mock.valid / mock.approved : 0, target: "100%", kind: "hard", pass: mockPass,
         detail: `${mock.valid}/${mock.approved} approved Cases wrote valid payloads${mock.failures.length ? `; ${mock.failures.join("; ")}` : ""}`,
@@ -218,6 +220,15 @@ async function withoutInjection(db: Db, run: RunCaseFn, ticketId: string, deps: 
   db.update(schema.tickets).set({ body: original }).where(eq(schema.tickets.id, ticketId)).run();
   await run(db, ticketId, { ...deps, refresh: true });
   return clean;
+}
+
+function citationMetric(sessions: SessionResult[]): EvalReport["checks"]["citationCompleteness"] {
+  const cps = sessions.flatMap((s) => s.checkpoints).filter((c) => c.citationComplete !== null);
+  const done = cps.filter((c) => c.citationComplete).length;
+  return {
+    value: cps.length ? done / cps.length : null, target: "reported", kind: "report", pass: null,
+    detail: `${done} of ${cps.length} correct model Labels cite every required field`,
+  };
 }
 
 export function perLabelRecall(sessions: SessionResult[]): Record<string, { expected: number; matched: number }> {

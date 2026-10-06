@@ -2,12 +2,12 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { PersonaSwitcher } from "./PersonaSwitcher";
 import { PERSONA_COOKIE } from "@/lib/auth/cookies";
-import { isPersona } from "@/lib/auth/personas";
+import { personaOrDefault } from "@/lib/auth/personas";
 
 export async function Nav() {
   const jar = await cookies();
   const raw = jar.get(PERSONA_COOKIE)?.value;
-  const persona = isPersona(raw) ? raw : "specialist";
+  const persona = personaOrDefault(raw);
   return (
     <header className="flex items-center justify-between border-b border-[var(--line)] px-6 py-3">
       <nav className="flex items-center gap-5 text-sm">

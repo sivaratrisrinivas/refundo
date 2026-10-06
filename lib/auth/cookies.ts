@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { isPersona, type Persona } from "./personas";
+import { personaOrDefault, type Persona } from "./personas";
 
 export const AUTH_COOKIE = "refundo_auth";
 export const PERSONA_COOKIE = "refundo_persona";
@@ -33,6 +33,6 @@ export interface Viewer {
 export function readViewer(cookieHeader: string | null | undefined): Viewer {
   const jar = parseCookies(cookieHeader);
   const authed = jar[AUTH_COOKIE] === authToken();
-  const persona = isPersona(jar[PERSONA_COOKIE]) ? jar[PERSONA_COOKIE] : "specialist";
+  const persona = personaOrDefault(jar[PERSONA_COOKIE]);
   return { authed, persona };
 }

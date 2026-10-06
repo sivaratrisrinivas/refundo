@@ -1,7 +1,7 @@
 import { latestReports } from "@/lib/eval/report";
 import { metricRows, sessionRows, cents } from "@/lib/eval/view";
 import type { EvalReport } from "@/lib/eval/types";
-import type { ModelName } from "@/lib/models";
+import { MODEL_LABEL, MODEL_LETTER, type ModelName } from "@/lib/models";
 import { cn } from "@/lib/ui/cn";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +14,7 @@ const STATUS_STYLE = {
 } as const;
 const STATUS_TEXT = { met: "met", missed: "target missed", "hard-fail": "HARD FAIL", reported: "reported" } as const;
 const MODELS: ModelName[] = ["sim-a", "sim-b"];
-const NAME: Record<ModelName, string> = { "sim-a": "Simulated model A (strong)", "sim-b": "Simulated model B (cheap)" };
+const NAME = MODEL_LABEL;
 
 function Provenance({ r }: { r: EvalReport }) {
   return (
@@ -118,7 +118,7 @@ export default function EvalPage() {
                   {have.map((m) => { const r = s.results[m]; return r ? (
                     <span key={m} className="w-44 text-xs tabular-nums" data-testid={`result-${s.caseId}-${m}`} data-pass={r.pass}>
                       <span className={r.pass ? "text-emerald-800 dark:text-emerald-300" : "font-semibold text-red-700 dark:text-red-300"}>{r.pass ? "pass" : "fail"}</span>{" "}
-                      {m === "sim-a" ? "A" : "B"}: {cents(r.actualAmountCents)} <span className="text-[var(--muted)]">/ {cents(r.expectedAmountCents)}</span>
+                      {MODEL_LETTER[m]}: {cents(r.actualAmountCents)} <span className="text-[var(--muted)]">/ {cents(r.expectedAmountCents)}</span>
                     </span>
                   ) : null; })}
                 </summary>

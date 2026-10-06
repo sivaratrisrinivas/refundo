@@ -190,10 +190,16 @@ describe("Cap, Headroom and Chargeback bump", () => {
     const r = run({ ...one(9000), disputeThreatened: true }, "core", 4000);
     expect(r.amountCents).toBe(3500);
   });
-  test("a threatened dispute that fits in Headroom needs no lead", () => {
+  test("a threatened dispute that fits in Headroom needs no lead and does not raise the ceiling", () => {
     const r = run({ ...one(3000), disputeThreatened: true }, "core", 0);
     expect(r.status).toBe("ready");
     expect(r.capStatus).toBe("within_cap");
+    expect(r.ceilingCents).toBe(5000); // the bump is used only when the proposal needs it
+  });
+  test("the bump needs a Lead only when the policy says so", () => {
+    const loose = { ...policy, chargebackNeedsLead: false };
+    const r = price({ checkpoints: [cp(1, 6000)], labels: [lab(1, "false_completion")], account: { plan: "core", creditsGranted30dCents: 0 }, disputeThreatened: true, policy: loose });
+    expect([r.capStatus, r.needsLead, r.amountCents]).toEqual(["chargeback_bump", false, 6000]);
   });
   test("Enterprise is recommend-only and routed to the account manager", () => {
     const r = run(one(99999), "enterprise", 0);

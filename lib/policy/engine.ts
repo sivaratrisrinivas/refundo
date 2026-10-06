@@ -167,15 +167,15 @@ export function price(input: PriceInput): PriceResult {
   if (subtotalCents > headroom) {
     if (input.disputeThreatened) {
       ceiling = bumpCeiling;
-      needsLead = true;
+      needsLead = policy.chargebackNeedsLead;
       capStatus = subtotalCents > bumpCeiling ? "bump_clamped" : "chargeback_bump";
     } else {
       needsLead = true;
       capStatus = "clamped";
     }
-  } else if (input.disputeThreatened) {
-    ceiling = bumpCeiling; // available if a Lead later raises it; not used now
   }
+  // A threatened dispute that fits inside Headroom does not use the bump: the ceiling stays Headroom, so nobody
+  // can approve above Headroom without a Lead (the bump is applied only when the proposal needs it).
 
   const amountCents = Math.min(subtotalCents, ceiling);
   let finalLines = lines;

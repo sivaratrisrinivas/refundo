@@ -150,7 +150,7 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
           if (!needModel.includes(raw.checkpointId) || labelByCp.has(raw.checkpointId)) continue;
           const cl = claims.get(raw.checkpointId);
           const cp = c.checkpoints.find((k) => k.id === raw.checkpointId);
-          labelByCp.set(raw.checkpointId, { ...validateModelLabel(raw, cl, policy.minConfidence, cp ? { appTestPassed: cp.appTest.passed } : undefined), claims: cl });
+          labelByCp.set(raw.checkpointId, { ...validateModelLabel(raw, cl, policy.minConfidence, cp), claims: cl });
         }
       }
     }
@@ -191,7 +191,7 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
     // A second Ticket for an already-credited Session never earns a second Credit.
     amountCents = 0;
     lines = lines.map((l) => ({ ...l, creditCents: 0 }));
-    status = "ready";
+    if (priced.status !== "recommend_only") status = "ready";
     needsLead = false;
     needsHuman = false;
     decisionNotes.push(`Session already credited on ${c.priorCredit.approvedOn}; no second Credit is added.`);

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { PERSONA_COOKIE } from "@/lib/auth/cookies";
-import { can, isPersona } from "@/lib/auth/personas";
+import { can, personaOrDefault } from "@/lib/auth/personas";
 import { verifyAuditChain } from "@/lib/audit";
 import { schema } from "@/lib/db/client";
 import { appDb } from "@/lib/db/app-db";
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function AuditPage() {
   const raw = (await cookies()).get(PERSONA_COOKIE)?.value;
-  const persona = isPersona(raw) ? raw : "specialist";
+  const persona = personaOrDefault(raw);
   if (!can(persona, "audit.read")) {
     return (
       <section className="mx-auto max-w-3xl">

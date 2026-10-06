@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { DEFAULT_PERSONA } from "@/lib/auth/personas";
 import { AUTH_COOKIE, PERSONA_COOKIE, authToken, passcode } from "@/lib/auth/cookies";
 
 export async function POST(request: Request) {
@@ -9,6 +10,6 @@ export async function POST(request: Request) {
   }
   const res = NextResponse.redirect(new URL("/", request.url), 303);
   res.cookies.set(AUTH_COOKIE, authToken(), { httpOnly: true, sameSite: "lax", path: "/" });
-  res.cookies.set(PERSONA_COOKIE, "specialist", { sameSite: "lax", path: "/" });
+  res.cookies.set(PERSONA_COOKIE, DEFAULT_PERSONA, { sameSite: "lax", path: "/" });
   return res;
 }

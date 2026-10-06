@@ -68,6 +68,7 @@ Copied from the stored reports in `eval/reports/` by `bun run results` (the bloc
 | Money error: over-credited / under-credited | | $0.00 / $0.00 of $390.95 expected | $0.00 / $42.00 of $390.95 expected |
 | Human load: Cases that need a person | | 8 of 20 (4 by design) | 17 of 20 (4 by design) |
 | Checkpoints sent to a person that the rubric settles | | 7 of 91 | 29 of 91 |
+| Correct model Labels citing every required field | | 61 of 61 | 39 of 39 |
 | Reply validator on a labeled set: true positive / true negative | | 100% of 256 bad / 100% of 112 good | 100% of 265 bad / 100% of 116 good |
 
 Second-model rerun: label agreement of the two models differs by 24.2 points (limit 25); met.
@@ -141,8 +142,8 @@ The passcode gate and the Persona switcher are for a demo: the cookie is a hash 
 
 ## Out of scope
 
-The optional Chargeback Fight-or-Refund Desk (Stripe test mode and dispute evidence); real LLM calls, API keys, or any real-model accuracy claim; real Zendesk, Orb, Stripe or Linear integrations and any real customer data; real authentication beyond the passcode and Persona switcher; deploying to Replit, outreach messages and hiring-manager lookups, and a narrated video; an LLM judge for reply quality; cash refunds of any kind (Refundo only issues Credits); re-crediting an approved Credit; multi-instance or production-scale concerns for the SQLite file.
+The optional Chargeback Fight-or-Refund Desk (Stripe test mode and dispute evidence); real LLM calls, API keys, or any real-model accuracy claim; real Zendesk, Orb, Stripe or Linear integrations and any real customer data; real authentication beyond the passcode and Persona switcher; deploying to Replit, outreach messages and hiring-manager lookups, and a narrated video; the optional clause-selector stage (the provider can run it, but it is not wired into a Case); an LLM judge for reply quality; cash refunds of any kind (Refundo only issues Credits); re-crediting an approved Credit; multi-instance or production-scale concerns for the SQLite file.
 
 ## Map
 
-`CONTEXT.md` (the glossary), `docs/adr/` (why bun and SQLite, why every model is simulated), `docs/rubric.md` (the labeling rubric, version 2), `docs/build-plan.md` (the original plan; the ADRs and the spec override it where they differ), `eval/expected.json` (the expected answers, committed before any data existed), `lib/policy/` (the pure pricing engine), `lib/pipeline/` (`runCase`, `approveDecision`), `lib/models/` (the Simulated models).
+`CONTEXT.md` (the glossary), `docs/adr/` (why bun and SQLite, why every model is simulated), `docs/rubric.md` (the labeling rubric, version 2), `docs/review-notes.md` (where the build departs from the spec, and why), `docs/build-plan.md` (the original plan; the ADRs and the spec override it where they differ), `eval/expected.json` (the expected answers, committed before any data existed), `lib/policy/` (the pure pricing engine), `lib/pipeline/` (`runCase`, `approveDecision`), `lib/models/` (the Simulated models).

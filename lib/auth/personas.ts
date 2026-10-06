@@ -48,3 +48,10 @@ export const PERSONA_LABEL: Record<Persona, string> = {
   lead: "Lead",
   reviewer: "Reviewer",
 };
+
+export const DEFAULT_PERSONA: Persona = "specialist";
+
+/** The Persona in a cookie value, or the default when it is missing or unknown. */
+export function personaOrDefault(raw: unknown): Persona {
+  return isPersona(raw) ? raw : DEFAULT_PERSONA;
+}

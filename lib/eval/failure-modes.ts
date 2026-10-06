@@ -49,7 +49,7 @@ export function classifyFailure(t: MismatchTrace): FailureMode {
 export const FAILURE_MODE_TEXT: Record<FailureMode, string> = {
   low_confidence_unknown: "The model answered below the 0.6 confidence minimum, so the Checkpoint became `unknown` and went to a person. No money moved.",
   invalid_citation_unknown: "The model cited a field that does not exist on the Checkpoint. The citation validator turned the Label into `unknown`. No money moved.",
-  missing_citation_unknown: "The model gave a verdict with no citation at all. It became `unknown`. No money moved.",
+  missing_citation_unknown: "The model gave a Label with no citation at all. It became `unknown`. No money moved.",
   claim_check_conflict_unknown: "The Labeler and the claim verifier disagreed (for example `delivered` against a contradicted claim). The consistency guard sent it to a person. No money moved.",
   failed_test_guard_unknown: "The model said `delivered` over a failed test; the guard sent it to a person (it was a real false completion the claim check had missed). No money moved.",
   weak_evidence_confirm_unknown: "The model called a false completion on missing-file evidence alone, with every test passing; the guard asks a person to confirm before any Credit. No money moved (this is the guard that stops a flipped claim becoming an over-credit).",

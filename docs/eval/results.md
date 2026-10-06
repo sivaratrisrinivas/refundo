@@ -20,6 +20,7 @@ Generated from `eval/reports/` by `bun run results`. Do not edit by hand.
 | Money error: over-credited / under-credited | | $0.00 / $0.00 of $390.95 expected | $0.00 / $42.00 of $390.95 expected |
 | Human load: Cases that need a person | | 8 of 20 (4 by design) | 17 of 20 (4 by design) |
 | Checkpoints sent to a person that the rubric settles | | 7 of 91 | 29 of 91 |
+| Correct model Labels citing every required field | | 61 of 61 | 39 of 39 |
 | Reply validator on a labeled set: true positive / true negative | | 100% of 256 bad / 100% of 112 good | 100% of 265 bad / 100% of 116 good |
 
 Second-model rerun: label agreement of the two models differs by 24.2 points (limit 25); met.
