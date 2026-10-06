@@ -1,0 +1,39 @@
+{
+  "simulated": true,
+  "kind": "simulated blind labeler",
+  "sessions": [
+    "S-E2",
+    "S-E3",
+    "S-E4",
+    "S-E5",
+    "S-E7",
+    "S-E8",
+    "S-E9",
+    "S-E10",
+    "S-E15",
+    "S-B1"
+  ],
+  "checkpoints": 45,
+  "agreed": 42,
+  "agreement": 0.9333333333333333,
+  "disagreements": [
+    {
+      "checkpointId": "S-E3-c1",
+      "expected": "delivered",
+      "blind": "unknown",
+      "note": "The error appears only once so far (not a loop yet), tests were not run, and no rubric label clearly fits."
+    },
+    {
+      "checkpointId": "S-E3-c2",
+      "expected": "delivered",
+      "blind": "unknown",
+      "note": "This is the second consecutive checkpoint with the same normalized error, so it is not a loop yet. Tests were not run."
+    },
+    {
+      "checkpointId": "S-B1-c3",
+      "expected": "delivered",
+      "blind": "false_completion",
+      "note": "The claim describes layout smoothing, not a team invite screen, and no changed file is a layout or style file; could also be delivered."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "simulated": true,
+  "kind": "simulated blind labeler",
+  "note": "Every disagreement between the simulated blind labeler and the committed expected Labels, with how it was resolved. Expected Labels were not changed to match the labeler.",
+  "resolutions": [
+    {
+      "checkpointId": "S-E3-c1",
+      "expected": "delivered",
+      "blind": "unknown",
+      "resolution": "rubric_fix",
+      "decision": "The version 1 rubric did not say what a Checkpoint with a repeated error but only one or two occurrences should be. Rubric version 2, rule 2: an error alone does not make a Checkpoint non-delivered; the first two repeats are labeled by their other evidence and annotated 'repeat n of 3'.",
+      "rubricRule": 2
+    },
+    {
+      "checkpointId": "S-E3-c2",
+      "expected": "delivered",
+      "blind": "unknown",
+      "resolution": "rubric_fix",
+      "decision": "Same gap as Checkpoint 1: the second repeat is not yet a loop. Fixed by rubric version 2, rule 2.",
+      "rubricRule": 2
+    },
+    {
+      "checkpointId": "S-B1-c3",
+      "expected": "delivered",
+      "blind": "false_completion",
+      "resolution": "ambiguous",
+      "decision": "The claim ('Smoothed out the rough edges around the page layout') matches no file and no test step, so it is unverifiable rather than contradicted. The labeler itself gave confidence 0.4 and said it could also be delivered. Rubric version 2, rule 3 states that unverifiable is never a false completion. The session is marked borderline by design, and this Checkpoint stays marked ambiguous: the expected Label is kept, and a disagreement here is not counted against a pipeline.",
+      "rubricRule": 3
+    }
+  ]
+}

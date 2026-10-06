@@ -1,0 +1,25 @@
+# Refundo credit policy. DRAFT NUMBERS: the owning company would set these.
+# Edit this file, bump `version`, never touch code. Money is in dollars here
+# and converted to integer cents on load.
+version: 2026-10-draft-1
+draft_numbers: true
+
+clauses:
+  C1: { label: delivered,            credit_pct: 0 }
+  C2: { label: reverted_after_fail,  credit_pct: 100, window_min: 30 }
+  C3: { label: loop,                 credit_pct: 100, credit_from_repeat: 3 }
+  C4: { label: false_completion,     credit_pct: 100 }
+  C5: { label: scope_overrun,        credit_pct: 50,  files_ratio: 10, needs_human: true }
+  C6: { label: incident_overlap,     credit_pct: 100 }
+  C7: { label: known_bug,            credit_pct: 100, file_linear: true }
+  C8: { label: user_choice_rollback, credit_pct: 0 }
+  # planning is covered by C1 (0%): Plan Mode work is billed but not credited.
+
+caps_30d_usd: { core: 50, pro: 250 }
+enterprise: route_to_account_manager
+chargeback_bump: { max_multiplier: 1.5, needs_lead_approval: true }
+min_confidence: 0.6
+credit_form: orb_increment_cost_basis_0
+
+# Median files changed per request class (pinned so the scope ratio is stable).
+median_files: { style: 3, fix: 4, feature: 8, refactor: 12 }

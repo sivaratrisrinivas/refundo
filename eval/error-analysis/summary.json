@@ -1,0 +1,43 @@
+{
+  "simulated": true,
+  "seeds": 20,
+  "totals": {
+    "sim-a": {
+      "checkpoints": 1820,
+      "wrong": 166,
+      "seeds": 20,
+      "stepFailures": {}
+    },
+    "sim-b": {
+      "checkpoints": 1820,
+      "wrong": 579,
+      "seeds": 20,
+      "stepFailures": {
+        "draft reply": 13,
+        "extract complaint": 6,
+        "verify claims": 2,
+        "label": 2
+      }
+    }
+  },
+  "modeCounts": {
+    "sim-a": {
+      "low_confidence_unknown": 47,
+      "model_unknown_answer": 34,
+      "claim_check_conflict_unknown": 13,
+      "weak_evidence_confirm_unknown": 34,
+      "missing_citation_unknown": 14,
+      "invalid_citation_unknown": 24
+    },
+    "sim-b": {
+      "invalid_citation_unknown": 101,
+      "low_confidence_unknown": 107,
+      "claim_check_conflict_unknown": 66,
+      "weak_evidence_confirm_unknown": 99,
+      "model_unknown_answer": 124,
+      "missing_citation_unknown": 63,
+      "failed_test_guard_unknown": 2,
+      "schema_failure_needs_human": 17
+    }
+  }
+}

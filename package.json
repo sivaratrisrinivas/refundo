@@ -1,0 +1,44 @@
+{
+  "name": "refundo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
+    "start": "bun --bun next start",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "db:generate": "drizzle-kit generate",
+    "seed": "bun run scripts/generate-sessions.ts && bun run scripts/seed.ts",
+    "eval": "bun run scripts/eval.ts",
+    "generate": "bun run scripts/generate-sessions.ts",
+    "results": "bun run scripts/render-results.ts",
+    "error-traces": "bun run scripts/error-traces.ts",
+    "blind-score": "bun run scripts/blind-score.ts",
+    "roi": "bun run scripts/roi.ts",
+    "e2e": "bun --bun next build && bunx playwright test",
+    "walkthrough": "bun --bun next build && node e2e/walkthrough.mjs"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.3",
+    "next": "^16.4.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwind-merge": "^3.7.0",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/bun": "^1.4.2",
+    "@types/node": "^26.6.4",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "drizzle-kit": "^0.31.11",
+    "postcss": "^8.5.29",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
+}
