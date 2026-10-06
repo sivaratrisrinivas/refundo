@@ -38,6 +38,20 @@ _Avoid_: Rule
 A deterministic stand-in for an LLM with a declared error profile. Its output is never presented as a measurement of a real model.
 _Avoid_: Mock model, fake LLM
 
+## Synthetic data
+
+**Failure pattern**:
+The kind of planted failure (or none) in a synthetic Session. It is hidden from the pipeline and used only by the generator and the eval.
+_Avoid_: Archetype, scenario
+
+**Graded session**:
+A synthetic Session whose expected Labels and Credit were committed before its transcript existed.
+_Avoid_: Eval case, test case
+
+**Mock system**:
+A stand-in for an external system (Orb, Zendesk, Linear) that accepts real-shaped payloads and records them in the outbox.
+_Avoid_: Fake, stub
+
 ## Money
 
 **Credit**:
