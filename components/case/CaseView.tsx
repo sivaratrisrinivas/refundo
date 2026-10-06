@@ -8,6 +8,7 @@ import type { CaseView as View } from "@/lib/pipeline/case-view";
 import { LABEL_TEXT } from "@/lib/pipeline/label-text";
 import { cn } from "@/lib/ui/cn";
 import { ageLabel, usd } from "@/lib/ui/format";
+import { SHORTCUT_HELP, shortcutAction } from "@/lib/ui/shortcuts";
 import { LabelChip, ModeBadge, SourceBadge } from "./chips";
 
 type Msg = { kind: "ok" | "error"; text: string } | null;
@@ -66,6 +67,23 @@ export function CaseView({ view }: { view: View }) {
     void act(() => post(`/api/cases/${view.ticket.id}/approve`, {}), "Approved. The writes are on the Systems page.");
   }, [view.gate.enabled, view.ticket.id, act, busy]);
 
+  // Keyboard shortcuts: j/k move through the timeline, a approves when the button would be enabled.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      const action = shortcutAction({ key: e.key, ctrlKey: e.ctrlKey, metaKey: e.metaKey, altKey: e.altKey, target: e.target as HTMLElement | null }, view.gate.enabled && !busy);
+      if (!action) return;
+      e.preventDefault();
+      if (action === "approve") return approve();
+      const seqs = view.rows.map((r) => r.checkpoint.seq);
+      setSelected((cur) => {
+        const i = Math.max(0, seqs.indexOf(cur));
+        return seqs[Math.min(seqs.length - 1, Math.max(0, i + (action === "next" ? 1 : -1)))] ?? cur;
+      });
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [view.gate.enabled, view.rows, busy, approve]);
+
   async function saveReply() {
     setReplyViolations([]);
     const r = await act(() => post(`/api/cases/${view.ticket.id}/reply`, { reply }), "Reply saved.");
@@ -100,7 +118,12 @@ export function CaseView({ view }: { view: View }) {
 
       {/* Timeline + evidence */}
       <section className="space-y-3" aria-label="Session timeline">
-        <h2 className="text-sm font-semibold">Session timeline <span className="font-normal text-[var(--muted)]">({view.rows.length} Checkpoints)</span></h2>
+        <div className="flex items-baseline justify-between">
+          <h2 className="text-sm font-semibold">Session timeline <span className="font-normal text-[var(--muted)]">({view.rows.length} Checkpoints)</span></h2>
+          <p data-testid="shortcut-help" className="text-xs text-[var(--muted)]">
+            {SHORTCUT_HELP.map((s) => <span key={s.keys} className="ml-3"><kbd className="rounded border border-[var(--line)] px-1">{s.keys}</kbd> {s.does}</span>)}
+          </p>
+        </div>
         <ol className="divide-y divide-[var(--line)] rounded border border-[var(--line)] bg-[var(--card)]" data-testid="timeline">
           {view.rows.map((r) => {
             const cp = r.checkpoint;

@@ -12,10 +12,14 @@ import { seededDb } from "./helpers";
 
 const provider = errorFreeModel("sim-a");
 const run = (db: ReturnType<typeof seededDb>, t: string) => runCase(db, t, { provider });
-const counts = (db: ReturnType<typeof seededDb>) => ({
+// The seed already holds one earlier Credit (E16): two outbox rows and one audit row.
+const raw = (db: ReturnType<typeof seededDb>) => ({
   outbox: db.select().from(schema.outbox).all().length,
   audit: db.select().from(schema.auditLog).all().length,
 });
+const BASE = raw(seededDb());
+const counts = (db: ReturnType<typeof seededDb>) => ({ outbox: raw(db).outbox - BASE.outbox, audit: raw(db).audit - BASE.audit });
+const mine = (db: ReturnType<typeof seededDb>, ticket: string) => db.select().from(schema.outbox).where(eq(schema.outbox.decisionId, `D-${ticket}`)).all();
 
 describe("approving a priced Case", () => {
   test("writes exactly the Orb and Zendesk outbox rows and one audit row, and updates the account", async () => {
@@ -23,7 +27,7 @@ describe("approving a priced Case", () => {
     await run(db, "T-E2");
     const r = approveDecision(db, { ticketId: "T-E2", persona: "specialist" });
     expect(r.ok).toBe(true);
-    const rows = db.select().from(schema.outbox).all();
+    const rows = mine(db, "T-E2");
     expect(rows.map((x) => x.system).sort()).toEqual(["orb", "zendesk"]);
     expect(counts(db).audit).toBe(1);
     const d = loadDecision(db, "T-E2")!;
@@ -90,7 +94,7 @@ describe("Persona gates", () => {
     expect(counts(db)).toEqual({ outbox: 0, audit: 0 });
     const ok = approveDecision(db, { ticketId: "T-E12", persona: "lead" });
     expect(ok.ok).toBe(true);
-    expect(db.select().from(schema.outbox).all().find((x) => x.system === "orb")!.payload).toMatchObject({ body: { amount: 50 } });
+    expect(mine(db, "T-E12").find((x) => x.system === "orb")!.payload).toMatchObject({ body: { amount: 50 } });
   });
 
   test("a Lead can approve a Chargeback bump; a Specialist cannot", async () => {
@@ -125,7 +129,7 @@ describe("Persona gates", () => {
     expect(o.ok).toBe(true);
     expect(loadDecision(db, "T-E5")!.status).toBe("ready");
     expect(approveDecision(db, { ticketId: "T-E5", persona: "specialist" }).ok).toBe(true);
-    expect(db.select().from(schema.outbox).all().find((x) => x.system === "orb")!.payload).toMatchObject({ body: { amount: 12.5 } });
+    expect(mine(db, "T-E5").find((x) => x.system === "orb")!.payload).toMatchObject({ body: { amount: 12.5 } });
   });
 });
 
@@ -150,7 +154,7 @@ describe("Overrides", () => {
     expect(d.labels.find((l) => l.checkpointId === "S-E4-c3")).toMatchObject({ label: "delivered", source: "human" });
     expect(d.amountCents).toBe(0);
     expect(d.overrideReason).toBe("the login test was flaky, I re-ran it");
-    const audit = db.select().from(schema.auditLog).all();
+    const audit = db.select().from(schema.auditLog).all().filter((a) => !(a.payload as { seeded?: boolean }).seeded);
     expect(audit.map((a) => [a.actor, a.action])).toEqual([["specialist", "override"]]);
     const backlog = exportOverrideBacklog(db);
     expect(backlog).toHaveLength(1);
@@ -193,9 +197,10 @@ describe("audit log", () => {
 
   test("is hash-chained and verifies", async () => {
     const db = await withRows();
-    expect(verifyAuditChain(db)).toEqual({ ok: true, rows: 3 });
+    expect(verifyAuditChain(db)).toEqual({ ok: true, rows: 4 });
     const rows = db.select().from(schema.auditLog).all();
     expect(rows[1]!.prevHash).toBe(rows[0]!.hash);
+    expect(rows[0]!.prevHash).toBe("GENESIS");
   });
 
   test("refuses UPDATE and DELETE: there is no deletion path", async () => {
@@ -206,16 +211,16 @@ describe("audit log", () => {
     };
     expect(message(() => db.run(sql`update audit_log set actor = 'x' where id = 1`))).toMatch(/append-only/);
     expect(message(() => db.run(sql`delete from audit_log where id = 1`))).toMatch(/append-only/);
-    expect(db.select().from(schema.auditLog).all()).toHaveLength(3);
+    expect(db.select().from(schema.auditLog).all()).toHaveLength(4);
     expect(verifyAuditChain(db).ok).toBe(true);
   });
 
   test("tampering with any row is detected by verifying the chain", async () => {
     for (const tamper of [
-      `update audit_log set payload = '{"decisionId":"x"}' where id = 2`,
+      `update audit_log set payload = '{"decisionId":"x"}' where id = 3`,
       `update audit_log set actor = 'someone-else' where id = 2`,
       `update audit_log set hash = 'deadbeef' where id = 1`,
-      `update audit_log set prev_hash = 'deadbeef' where id = 3`,
+      `update audit_log set prev_hash = 'deadbeef' where id = 4`,
       `delete from audit_log where id = 2`,
     ]) {
       const db = await withRows();

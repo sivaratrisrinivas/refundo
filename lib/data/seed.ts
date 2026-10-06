@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { appendAudit } from "@/lib/audit";
+import { orbPayload, zendeskPayload, idempotencyKey } from "@/lib/mocks/payloads";
 import { policyVersionForSeed } from "./seed-meta";
 import type { Db } from "@/lib/db/client";
 import { schema } from "@/lib/db/client";
@@ -53,6 +55,24 @@ export function seedDb(db: Db, data: Dataset = loadDatasetFile()): void {
     for (const i of data.incidents) tx.insert(schema.incidents).values(i).run();
     for (const b of data.bugSignatures) tx.insert(schema.bugSignatures).values(b).run();
     for (const d of data.priorDecisions) {
+      const sess = data.sessions.find((x) => x.id === d.sessionId)!;
+      const acct = data.accounts.find((x) => x.id === sess.accountId)!;
+      const at = `${d.approvedOn}T10:05:00.000Z`;
+      const reply = `Hi ${acct.name.split(" ")[0]},\n\nThanks for flagging this. Session ${d.sessionId} was credited ${(d.amountCents / 100).toFixed(2).replace(/^/, "$")} earlier, as a goodwill credit for the step that was rolled back after a failed test.\n\nBest,\nBilling support`;
+      const writes = [
+        { system: "orb" as const, payload: orbPayload({ orbCustomerId: acct.orbCustomerId, amountCents: d.amountCents, decisionId: d.id, sessionId: d.sessionId, ticketId: d.ticketId, clauseIds: ["C2"], policyVersion: policyVersionForSeed }) },
+        { system: "zendesk" as const, payload: zendeskPayload({ ticketId: d.ticketId, reply, clauseIds: ["C2"], credited: true }) },
+      ];
+      for (const w of writes) {
+        tx.insert(schema.outbox).values({
+          id: `OB-${d.id}-${w.system}`, decisionId: d.id, system: w.system, payload: w.payload, createdAt: at,
+          idempotencyKey: idempotencyKey(w.system, { sessionId: d.sessionId, ticketId: d.ticketId }),
+        }).run();
+      }
+      appendAudit(tx, {
+        actor: d.approver, action: "approve",
+        payload: { decisionId: d.id, ticketId: d.ticketId, sessionId: d.sessionId, amountCents: d.amountCents, clauses: ["C2"], seeded: true, outbox: ["orb", "zendesk"] },
+      });
       tx.insert(schema.decisions).values({
         id: d.id, ticketId: d.ticketId, sessionId: d.sessionId, labels: [], clauses: ["C2"], lines: [],
         amountCents: d.amountCents, capStatus: "within_cap", status: "approved", approver: d.approver,
@@ -67,4 +87,10 @@ export function seedDb(db: Db, data: Dataset = loadDatasetFile()): void {
 export function ensureSeeded(db: Db): void {
   const n = db.select({ n: sql<number>`count(*)` }).from(schema.accounts).get()?.n ?? 0;
   if (n === 0) seedDb(db);
+}
+
+/** Demo reset: the database returns to exactly the seeded state; writes and audit rows made since are gone. */
+export function resetDemo(db: Db): void {
+  clearAll(db);
+  seedDb(db);
 }

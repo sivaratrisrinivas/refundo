@@ -57,7 +57,7 @@ export function approveDecision(
 
   const credited = d.amountCents > 0;
   const sessionId = c.session.id;
-  const clauseIds = [...d.clauses];
+  const clauseIds = d.clauses.filter((x) => d.lines.some((l) => l.clause === x && l.creditCents > 0));
   const ids = { sessionId, ticketId: d.ticketId };
   const writes: { system: MockSystem; payload: unknown }[] = [];
   if (credited) {
@@ -66,7 +66,7 @@ export function approveDecision(
       payload: orbPayload({ orbCustomerId: c.account.orbCustomerId, amountCents: d.amountCents, decisionId: d.id, sessionId, ticketId: d.ticketId, clauseIds, policyVersion: d.policyVersion }),
     });
   }
-  writes.push({ system: "zendesk", payload: zendeskPayload({ ticketId: d.ticketId, reply: d.reply, clauseIds: clauseIds.filter((x) => d.lines.some((l) => l.clause === x && l.creditCents > 0)), credited }) });
+  writes.push({ system: "zendesk", payload: zendeskPayload({ ticketId: d.ticketId, reply: d.reply, clauseIds, credited }) });
   if (credited && d.fileLinear) {
     const bugLine = d.lines.find((l) => l.label === "known_bug" && l.creditCents > 0)!;
     const cpIds = d.lines.filter((l) => l.label === "known_bug" && l.creditCents > 0).map((l) => l.checkpointId);
