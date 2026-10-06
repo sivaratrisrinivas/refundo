@@ -8,6 +8,8 @@ import { loadPolicy } from "@/lib/policy/policy";
 import type { CheckpointLabel } from "@/lib/policy/types";
 import { assembleCase } from "./assemble";
 import { applyAmountOverride, latestAmountOverride, overrideLabels } from "./overrides";
+import { detectInjection, asTicketData } from "./injection";
+import { complaintSchema } from "@/lib/models/schemas";
 import { callValidated, labelSchema, normalizeClaims, toLabelInput, toVerifyInput, validateModelLabel, verifySchema } from "./model-steps";
 import { runSignals } from "./signals";
 import { loadDecision, saveDecision } from "./store";
@@ -54,6 +56,33 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
     return d;
   }
 
+  // Stage 2: complaint extraction. Ticket text is delimited data; it never reaches pricing.
+  const decisionNotes: string[] = [];
+  let forcedHuman = false;
+  let complaint: unknown = null;
+  let modelInjection = false;
+  let modelDispute = false;
+  if (deps.provider) {
+    const seed = `${deps.seed ?? "refundo-seed-1"}:${ticketId}`;
+    const r = await callValidated(deps.provider, "complaint", { ticketText: asTicketData(c.ticket.body) }, { seed }, complaintSchema, "extract complaint");
+    trace.push(r.trace);
+    if (r.value) {
+      complaint = r.value;
+      modelInjection = r.value.injectionDetected;
+      modelDispute = r.value.disputeThreat;
+    } else {
+      forcedHuman = true;
+      decisionNotes.push("The complaint extractor returned malformed output twice; a person should read the Ticket.");
+    }
+  }
+  const injectionDetected = modelInjection || detectInjection(c.ticket.body);
+  if (injectionDetected) {
+    decisionNotes.push("The Ticket contains an instruction aimed at the pricing system. It was ignored: Credit comes only from Labels and policy.");
+  }
+  if (modelDispute && !c.ticket.disputeThreatened) {
+    decisionNotes.push("The Ticket text mentions a dispute but the intake flag is off, so no Chargeback bump was applied. A Lead may confirm.");
+  }
+
   // Stage 3: deterministic signals.
   const signals = runSignals(c.checkpoints, c.incidents, c.bugSignatures, policy);
   trace.push({ step: "signals", ok: true, note: `${signals.filter((s) => s.label).length} settled by rule` });
@@ -69,9 +98,6 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
   // Human Overrides beat every rule and model Label.
   const human = overrideLabels(overrides);
   for (const h of human) labelByCp.set(h.checkpointId, { ...h });
-  const decisionNotes: string[] = [];
-  let forcedHuman = false;
-
   // Stages 4-5: claim verifier and Labeler, for Checkpoints no rule or person settled.
   const needModel = pending.filter((id) => !labelByCp.has(id));
   if (deps.provider && needModel.length > 0) {
@@ -146,7 +172,7 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
     ...base,
     labels: finalLabels, clauses: priced.clauses, lines, amountCents, subtotalCents: priced.subtotalCents,
     capStatus: priced.capStatus, status, needsHuman, needsLead, routeTo: priced.routeTo, fileLinear: priced.fileLinear,
-    injectionDetected: false, complaint: null, reply: null, notes: decisionNotes, unresolved, trace,
+    injectionDetected, complaint, reply: null, notes: decisionNotes, unresolved, trace,
     costUsd: trace.reduce((s, t) => s + (t.costUsd ?? 0), 0), latencyMs: trace.reduce((s, t) => s + (t.latencyMs ?? 0), 0),
     ceilingCents: priced.ceilingCents, headroomCents: priced.headroomCents,
   };
