@@ -257,3 +257,28 @@ describe("guards found by error analysis", () => {
     expect(loadDecision(db, s.ticketId)!.amountCents).toBe(480);
   });
 });
+
+describe("settling one Checkpoint does not reshuffle the model's other answers", () => {
+  test("a re-run after an Override keeps what the model already said; refresh asks again", async () => {
+    const db = seededDb();
+    const sim = getProvider("sim-b");
+    const s = caseOf("E6");
+    const first = await runCase(db, s.ticketId, { provider: sim, seed: "keep" });
+    const modelLabels = first.labels.filter((l) => l.source === "model");
+    expect(modelLabels.length).toBeGreaterThan(3);
+    // Override one Checkpoint.
+    const target = modelLabels[0]!;
+    const { overrideDecision } = await import("@/lib/pipeline/approve");
+    const r = await overrideDecision(db, { ticketId: s.ticketId, persona: "specialist", kind: "label", checkpointId: target.checkpointId, to: "delivered", reason: "checked the preview, it is fine" }, { provider: sim, seed: "keep" });
+    expect(r.ok).toBe(true);
+    const after = loadDecision(db, s.ticketId)!;
+    for (const l of modelLabels.slice(1)) {
+      expect(after.labels.find((x) => x.checkpointId === l.checkpointId)).toEqual(l);
+    }
+    expect(after.trace.some((t) => t.note === "kept from the earlier run")).toBe(true);
+    // An explicit refresh discards the kept answers but keeps the person's Override.
+    const fresh = await runCase(db, s.ticketId, { provider: getProvider("sim-a"), seed: "other", refresh: true });
+    expect(fresh.labels.find((x) => x.checkpointId === target.checkpointId)).toMatchObject({ source: "human", label: "delivered" });
+    expect(fresh.modelName).toBe("sim-a");
+  });
+});

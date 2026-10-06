@@ -15,7 +15,9 @@
     "results": "bun run scripts/render-results.ts",
     "error-traces": "bun run scripts/error-traces.ts",
     "blind-score": "bun run scripts/blind-score.ts",
-    "roi": "bun run scripts/roi.ts"
+    "roi": "bun run scripts/roi.ts",
+    "e2e": "bun --bun next build && bunx playwright test",
+    "walkthrough": "bun --bun next build && node e2e/walkthrough.mjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

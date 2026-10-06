@@ -20,6 +20,12 @@ export interface RunDeps {
   /** The only injected dependency of the case seam: which Simulated model to use. */
   provider?: ModelProvider;
   seed?: string;
+  /**
+   * Discard the model answers kept from an earlier run and ask again. Without it, a re-run (for example after an
+   * Override) keeps what the model already said about every Checkpoint it was asked, so settling one Checkpoint
+   * cannot reshuffle the rest.
+   */
+  refresh?: boolean;
 }
 
 const HUMAN_PROMPT = "No rule or model could settle this Checkpoint. Choose a Label and give a reason.";
@@ -63,7 +69,15 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
   let complaint: unknown = null;
   let modelInjection = false;
   let modelDispute = false;
-  if (deps.provider) {
+  const kept = !deps.refresh && existing && deps.provider && existing.modelName === deps.provider.name ? existing : null;
+  const keptStep = (name: string) => kept?.trace.find((t) => t.step === name && t.ok);
+  if (deps.provider && kept?.complaint && keptStep("extract complaint")) {
+    complaint = kept.complaint;
+    const cm = kept.complaint as { injectionDetected?: boolean; disputeThreat?: boolean };
+    modelInjection = Boolean(cm.injectionDetected);
+    modelDispute = Boolean(cm.disputeThreat);
+    trace.push({ ...keptStep("extract complaint")!, note: "kept from the earlier run" });
+  } else if (deps.provider) {
     const seed = `${deps.seed ?? "refundo-seed-1"}:${ticketId}`;
     const r = await callValidated(deps.provider, "complaint", { ticketText: asTicketData(c.ticket.body) }, { seed }, complaintSchema, "extract complaint");
     trace.push(r.trace);
@@ -100,6 +114,20 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
   const human = overrideLabels(overrides);
   for (const h of human) labelByCp.set(h.checkpointId, { ...h });
   // Stages 4-5: claim verifier and Labeler, for Checkpoints no rule or person settled.
+  // Model answers from an earlier run are kept for Checkpoints still waiting on the model.
+  let keptLabels = 0;
+  if (kept) {
+    for (const id of pending) {
+      const prev = kept.labels.find((l) => l.checkpointId === id && l.source === "model");
+      if (prev && !labelByCp.has(id)) { labelByCp.set(id, prev); keptLabels++; }
+    }
+    if (keptLabels > 0) {
+      for (const name of ["verify claims", "label"]) {
+        const st = keptStep(name);
+        if (st) trace.push({ ...st, note: "kept from the earlier run" });
+      }
+    }
+  }
   const needModel = pending.filter((id) => !labelByCp.has(id));
   if (deps.provider && needModel.length > 0) {
     const cps = c.checkpoints.filter((k) => needModel.includes(k.id));

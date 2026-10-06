@@ -26,7 +26,7 @@ export async function handleRun(request: Request, ticketId: string): Promise<Res
   if (!g.ok) return g.response;
   const b = await body(request);
   try {
-    const d = await runCase(appDb(), ticketId, { provider: getProvider(modelFrom(b)) });
+    const d = await runCase(appDb(), ticketId, { provider: getProvider(modelFrom(b)), refresh: true });
     return Response.json({ ok: true, status: d.status, amountCents: d.amountCents });
   } catch (e) {
     return Response.json({ ok: false, error: (e as Error).message }, { status: 404 });

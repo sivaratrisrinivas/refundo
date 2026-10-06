@@ -43,6 +43,8 @@ Screens: a **Queue** sorted by chargeback risk then age; a **Case** page (Ticket
 | Blind labeler, annotator | **Simulated humans** | Separate subagents, reported as "simulated blind labeler" and never as human agreement |
 | Demo walkthrough | **Simulated human** | Recorded silently by a Playwright script, with a captioned script; no narration |
 
+**Demo.** A silent, captioned walkthrough (about two minutes) is in [`docs/demo/walkthrough.webm`](docs/demo/walkthrough.webm), with its script in [`docs/demo/script.md`](docs/demo/script.md). It is a Playwright run through the real UI: nobody narrates it. `bun run e2e` runs the same flow as a smoke test against a freshly seeded database (it fails if Approval stops being idempotent), and `bun run walkthrough` re-records it.
+
 ## Eval results
 
 Copied from the stored reports in `eval/reports/` by `bun run results` (the block between the markers is generated; do not edit it). Targets were set in `eval/expected.json` before any measurement.
@@ -117,6 +119,8 @@ bun run eval -- --model A   # writes eval/reports/<time>-sim-a.json, exits non-z
 bun run eval -- --model B   # compares with A's latest report
 bun run results       # refreshes the results block above from the stored reports
 bun run roi           # the ROI calculator
+bun run e2e           # production build, then the Playwright smoke run
+bun run walkthrough   # re-record the silent demo video and its captioned script
 ```
 
 The passcode comes from `REFUNDO_PASSCODE` (default `refundo-demo`); the database path from `REFUNDO_DB` (default `data/refundo.db`). An empty database seeds itself on the first request. **Reset demo** (Lead or Reviewer, on the Systems page) returns everything to the seeded state.

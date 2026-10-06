@@ -2,7 +2,7 @@
   "kind": "refundo-eval",
   "simulated": true,
   "simulatedTag": "simulated, not a real-model measurement",
-  "runAt": "2026-10-06T22:46:42.932Z",
+  "runAt": "2026-10-06T23:10:24.810Z",
   "model": "sim-b",
   "modelDisplayName": "Simulated model B (cheap)",
   "promptVersion": "refundo-prompts-2026-10-1",
