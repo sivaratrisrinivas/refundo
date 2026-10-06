@@ -321,16 +321,16 @@
    "agentClaimText": "The avatar cropper is added with a square crop."
   },
   "S-B1-c2": {
-   "requestText": "Add keyboard shortcuts for the menu",
-   "agentClaimText": "Keyboard shortcuts added for opening the menu and moving between items."
+   "requestText": "Add keyboard shortcuts for searching and saving",
+   "agentClaimText": "Keyboard shortcuts added for searching and saving."
   },
   "S-B1-c3": {
    "requestText": "Add a team invite screen",
    "agentClaimText": "Smoothed out the rough edges around the page layout."
   },
   "S-B1-c4": {
-   "requestText": "Add a pricing table to the footer area",
-   "agentClaimText": "Pricing table added with a link from the footer."
+   "requestText": "Add a pricing table to the marketing page",
+   "agentClaimText": "Pricing table added with three plans."
   },
   "S-B1-c5": {
    "requestText": "Add a language picker",

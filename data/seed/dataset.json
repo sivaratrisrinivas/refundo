@@ -2950,8 +2950,8 @@
    "model": "agent-large",
    "reasoningEffort": "medium",
    "costCents": 1100,
-   "requestText": "Add keyboard shortcuts for the menu",
-   "agentClaimText": "Keyboard shortcuts added for opening the menu and moving between items.",
+   "requestText": "Add keyboard shortcuts for searching and saving",
+   "agentClaimText": "Keyboard shortcuts added for searching and saving.",
    "filesChanged": [
     "src/features/keyboard-shortcuts.tsx",
     "src/config/env.ts"
@@ -3008,8 +3008,8 @@
    "model": "agent-large",
    "reasoningEffort": "medium",
    "costCents": 1300,
-   "requestText": "Add a pricing table to the footer area",
-   "agentClaimText": "Pricing table added with a link from the footer.",
+   "requestText": "Add a pricing table to the marketing page",
+   "agentClaimText": "Pricing table added with three plans.",
    "filesChanged": [
     "src/features/pricing-table.tsx",
     "src/styles/global.css"
