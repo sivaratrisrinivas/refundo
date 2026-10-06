@@ -34,4 +34,9 @@ export function getDb(): Db {
   return g.__refundoDb;
 }
 
+/** Tests and the demo reset swap the process database. */
+export function useDb(db: Db): void {
+  g.__refundoDb = db;
+}
+
 export { schema };

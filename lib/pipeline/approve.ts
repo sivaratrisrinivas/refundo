@@ -7,6 +7,7 @@ import { can, type Persona } from "@/lib/auth/personas";
 import { idempotencyKey, linearPayload, orbPayload, validateMockPayload, zendeskPayload, type MockSystem } from "@/lib/mocks/payloads";
 import { loadPolicy } from "@/lib/policy/policy";
 import { assembleCase } from "./assemble";
+import { approveGate } from "./gates";
 import { buildReplyDecision, validateReply } from "./reply";
 import { OverrideError, validateOverride } from "./overrides";
 import { runCase, type RunDeps } from "./run";
@@ -45,16 +46,8 @@ export function approveDecision(
   const d = loadDecision(db, input.ticketId);
   const c = assembleCase(db, input.ticketId);
   if (!d || !c || !c.session) return refuse("not_found", "no Decision to approve for this Ticket");
-  if (d.status === "approved") return refuse("already_approved", "this Decision is already approved");
-  if (d.status === "recommend_only" || c.account.plan === "enterprise") {
-    return refuse("recommend_only", "Enterprise Credits are recommendation-only and routed to the account manager");
-  }
-  if (d.status === "needs_human" || d.needsHuman) {
-    return refuse("needs_human", "a person must settle the flagged Checkpoints (Override with a reason) before approval");
-  }
-  if (d.needsLead && !can(input.persona, "decision.approve_lead")) {
-    return refuse("needs_lead", "this Case needs a Lead: it is over the Cap or carries a Chargeback bump");
-  }
+  const gate = approveGate(input.persona, d, c.account.plan);
+  if (!gate.enabled && gate.code !== "no_reply") return refuse(gate.code!, gate.reason ?? "refused");
   if (c.account.plan !== "core" && c.account.plan !== "pro") return refuse("recommend_only", "unsupported plan");
   if (d.amountCents > allowedAmount(d, c.account.plan, c.account.creditsGranted30dCents)) {
     return refuse("over_cap", "the amount exceeds what the Cap allows today; re-run the Case");

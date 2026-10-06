@@ -18,7 +18,7 @@ export default async function QueuePage({ searchParams }: { searchParams: Promis
   const filter = STATUSES.includes(status as TicketStatus) ? (status as TicketStatus) : undefined;
   const rows = listQueue(appDb(), { status: filter });
   return (
-    <section>
+    <section className="mx-auto max-w-6xl">
       <div className="flex items-end justify-between">
         <div>
           <h1 className="text-xl font-semibold">Queue</h1>
