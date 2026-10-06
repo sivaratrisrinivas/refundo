@@ -114,8 +114,9 @@ export class SimulatedModel implements ModelProvider {
   readonly displayName: string;
   private readonly profile: Profile;
 
-  constructor(readonly name: ModelName) {
-    this.profile = getProfile(name);
+  /** `profile` overrides the committed one; tests use an error-free profile to isolate pipeline logic. */
+  constructor(readonly name: ModelName, profile?: Profile) {
+    this.profile = profile ?? getProfile(name);
     this.displayName = this.profile.displayName;
   }
 

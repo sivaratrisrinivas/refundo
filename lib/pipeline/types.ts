@@ -27,6 +27,8 @@ export interface CaseData {
 export type LabelRecord = CheckpointLabel & {
   /** Set when the Label was replaced by `unknown` and a person must decide. */
   humanPrompt?: string;
+  /** Claim verdicts from the verify step, shown in the evidence drawer. */
+  claims?: { claim: string; status: "verified" | "contradicted" | "unverifiable"; evidence: string }[];
 };
 
 export interface Override {

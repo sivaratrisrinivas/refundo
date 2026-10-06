@@ -8,6 +8,7 @@ import { loadPolicy } from "@/lib/policy/policy";
 import type { CheckpointLabel } from "@/lib/policy/types";
 import { assembleCase } from "./assemble";
 import { applyAmountOverride, latestAmountOverride, overrideLabels } from "./overrides";
+import { callValidated, labelSchema, normalizeClaims, toLabelInput, toVerifyInput, validateModelLabel, verifySchema } from "./model-steps";
 import { runSignals } from "./signals";
 import { loadDecision, saveDecision } from "./store";
 import type { DecisionRecord, LabelRecord, TraceStep } from "./types";
@@ -68,6 +69,36 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
   // Human Overrides beat every rule and model Label.
   const human = overrideLabels(overrides);
   for (const h of human) labelByCp.set(h.checkpointId, { ...h });
+  const decisionNotes: string[] = [];
+  let forcedHuman = false;
+
+  // Stages 4-5: claim verifier and Labeler, for Checkpoints no rule or person settled.
+  const needModel = pending.filter((id) => !labelByCp.has(id));
+  if (deps.provider && needModel.length > 0) {
+    const cps = c.checkpoints.filter((k) => needModel.includes(k.id));
+    const seed = `${deps.seed ?? "refundo-seed-1"}:${ticketId}`;
+    const v = await callValidated(deps.provider, "verify", toVerifyInput(cps), { seed }, verifySchema, "verify claims");
+    trace.push(v.trace);
+    if (!v.value) {
+      forcedHuman = true;
+      decisionNotes.push("The claim verifier returned malformed output twice; a person must label these Checkpoints.");
+    } else {
+      const claims = normalizeClaims(v.value);
+      const flags = new Map(signals.map((s) => [s.checkpointId, s.flags]));
+      const l = await callValidated(deps.provider, "label", toLabelInput(cps, flags, claims), { seed }, labelSchema, "label");
+      trace.push(l.trace);
+      if (!l.value) {
+        forcedHuman = true;
+        decisionNotes.push("The Labeler returned malformed output twice; a person must label these Checkpoints.");
+      } else {
+        for (const raw of l.value) {
+          if (!needModel.includes(raw.checkpointId) || labelByCp.has(raw.checkpointId)) continue;
+          const cl = claims.get(raw.checkpointId);
+          labelByCp.set(raw.checkpointId, { ...validateModelLabel(raw, cl, policy.minConfidence), claims: cl });
+        }
+      }
+    }
+  }
   const unresolved = pending.filter((id) => !labelByCp.has(id));
 
   const finalLabels: LabelRecord[] = [];
@@ -94,12 +125,12 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
   if (amountOverride !== null && priced.ceilingCents !== null && amountOverride <= priced.ceilingCents) {
     priced = applyAmountOverride(priced, amountOverride);
   }
-  const decisionNotes: string[] = [];
   let status: DecisionRecord["status"] = priced.status;
   let amountCents = priced.amountCents;
   let lines = priced.lines;
   let needsLead = priced.needsLead;
-  let needsHuman = priced.needsHuman;
+  let needsHuman = priced.needsHuman || forcedHuman;
+  if (forcedHuman && status !== "recommend_only") status = "needs_human";
   if (c.priorCredit) {
     // A second Ticket for an already-credited Session never earns a second Credit.
     amountCents = 0;
