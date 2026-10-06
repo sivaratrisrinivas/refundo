@@ -77,6 +77,25 @@ export default function EvalPage() {
           </tbody>
         </table>
       </div>
+      <div className="grid gap-3 md:grid-cols-2" data-testid="robustness">
+        {have.map((m) => {
+          const r = reports[m]!;
+          const me = r.moneyError;
+          const pc = (n: number) => `${(n * 100).toFixed(1)}%`;
+          return (
+            <div key={m} className="rounded border border-[var(--line)] bg-[var(--card)] p-3 text-sm">
+              <p className="font-medium">{NAME[m]} <span className="text-[10px] uppercase text-[var(--muted)]">simulated</span></p>
+              <p className="mt-1 text-xs">Money error on the {r.sessions.filter((x) => !x.caseId.startsWith("inj:")).length} Graded sessions: over-credited {cents(me.overCreditCents)}, under-credited {cents(me.underCreditCents)}, against {cents(me.expectedTotalCents)} expected.</p>
+              <p className="mt-1 text-xs" data-testid={`humanload-${m}`}>Human load: {r.humanLoad.casesNeedingHuman} of {r.humanLoad.cases} Cases need a person ({r.humanLoad.expectedCasesNeedingHuman} by design), and {r.humanLoad.checkpointsToHuman} of {r.humanLoad.checkpoints} Checkpoints went to a person that the rubric settles. The guards keep money safe by sending doubt to people.</p>
+              {r.sweep ? (
+                <p className="mt-1 text-xs" data-testid={`sweep-${m}`}>
+                  One run is one draw of the model&apos;s mistakes. Over {r.sweep.seeds} further seeds: label agreement {pc(r.sweep.labelAgreement.mean)} ({pc(r.sweep.labelAgreement.min)} to {pc(r.sweep.labelAgreement.max)}), exact-credit match {pc(r.sweep.exactCreditMatch.mean)} ({pc(r.sweep.exactCreditMatch.min)} to {pc(r.sweep.exactCreditMatch.max)}). Seeds with a hard failure: <strong>{r.sweep.hardFailureSeeds}</strong>.
+                </p>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
       {have.map((m) => {
         const r = reports[m]!;
         return (

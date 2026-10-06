@@ -7,7 +7,7 @@ import { exportOverrideBacklog } from "@/lib/pipeline/backlog";
 import { runCase } from "@/lib/pipeline/run";
 import type { ModelName } from "@/lib/models";
 
-// Usage: bun run eval -- --model A|B [--seed s] [--regress]
+// Usage: bun run eval -- --model A|B [--seed s] [--sweep N] [--regress]
 const args = process.argv.slice(2);
 const arg = (name: string) => { const i = args.indexOf(`--${name}`); return i >= 0 ? args[i + 1] : undefined; };
 const m = (arg("model") ?? "A").toLowerCase();
@@ -26,7 +26,8 @@ const regress: RunCaseFn = async (db, ticketId, deps) => {
   return d;
 };
 
-const report = await runEval({ model, seed, runCaseImpl: args.includes("--regress") ? regress : undefined });
+const sweep = Number(arg("sweep") ?? 20);
+const report = await runEval({ model, seed, sweep, runCaseImpl: args.includes("--regress") ? regress : undefined });
 const prior = latestReports()[other];
 const gap = loadExpected().crossCuttingChecks.find((c) => c.id === "E19")?.maxAgreementGapPoints ?? 25;
 if (prior) addModelRerunCheck(report, prior, gap);
@@ -54,6 +55,14 @@ row("Mock payload validity", pct(report.checks.mockPayloadValidity.value), "100%
 row("Invalid replies reaching the UI", String(report.checks.replyValidity.value), "exactly 0", report.checks.replyValidity.pass);
 if (report.checks.modelRerun) row(`Rerun vs ${report.checks.modelRerun.against}`, `${report.checks.modelRerun.gapPoints} pts`, `<= ${report.checks.modelRerun.maxGapPoints} pts`, report.checks.modelRerun.pass);
 console.log(`\nreply validator on the labeled set: TPR ${pct(report.validator.truePositiveRate)} (${report.validator.bad} bad), TNR ${pct(report.validator.trueNegativeRate)} (${report.validator.good} good)`);
+const hl = report.humanLoad;
+console.log(`human load: ${hl.casesNeedingHuman}/${hl.cases} Cases need a person (${hl.expectedCasesNeedingHuman} by design); ${hl.checkpointsToHuman}/${hl.checkpoints} Checkpoints were sent to a person that the rubric settles`);
+const me = report.moneyError;
+console.log(`money error (simulated Credit): over-credited ${(me.overCreditCents / 100).toFixed(2)}, under-credited ${(me.underCreditCents / 100).toFixed(2)}, of ${(me.expectedTotalCents / 100).toFixed(2)} expected`);
+if (report.sweep) {
+  const w = report.sweep;
+  console.log(`sweep over ${w.seeds} extra seeds: label agreement ${pct(w.labelAgreement.mean)} (${pct(w.labelAgreement.min)} to ${pct(w.labelAgreement.max)}), exact credit ${pct(w.exactCreditMatch.mean)} (${pct(w.exactCreditMatch.min)} to ${pct(w.exactCreditMatch.max)}), seeds with a hard failure: ${w.hardFailureSeeds}`);
+}
 console.log(`failing sessions: ${report.sessions.filter((s) => !s.pass).map((s) => s.caseId).join(", ") || "none"}`);
 if (report.targetsMissed.length) console.log(`targets missed (reported, not failing): ${report.targetsMissed.join("; ")}`);
 if (report.hardFailures.length) console.log(`HARD FAILURES: ${report.hardFailures.join("; ")}`);

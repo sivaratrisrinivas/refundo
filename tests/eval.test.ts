@@ -156,3 +156,35 @@ describe("the pipeline under test never reads expected answers", () => {
     expect(a).toEqual(b);
   });
 });
+
+describe("robustness figures", () => {
+  test("a report carries money-weighted error and per-Label recall, not just agreement", async () => {
+    const r = await runEval({ model: "sim-b", seed: "money" });
+    expect(r.moneyError.expectedTotalCents).toBe(loadExpected().sessions.reduce((a, s) => a + s.expected.amountCents, 0));
+    const wrong = r.sessions.filter((s) => !s.caseId.startsWith("inj:")).reduce((a, s) => a + Math.abs(s.actualAmountCents - s.expectedAmountCents), 0);
+    expect(r.moneyError.overCreditCents + r.moneyError.underCreditCents).toBe(wrong);
+    expect(Object.keys(r.perLabel)).toContain("delivered");
+    const total = Object.values(r.perLabel).reduce((a, x) => a + x.expected, 0);
+    expect(total).toBe(r.sessions.reduce((a, s) => a + s.labelsTotal, 0));
+  });
+
+  test("a sweep over many seeds reports the spread, and the hard metrics hold on every seed", async () => {
+    const r = await runEval({ model: "sim-a", seed: "sw", sweep: 8 });
+    expect(r.sweep!.seeds).toBe(8);
+    expect(r.sweep!.labelAgreement.min).toBeLessThanOrEqual(r.sweep!.labelAgreement.mean);
+    expect(r.sweep!.labelAgreement.mean).toBeLessThanOrEqual(r.sweep!.labelAgreement.max);
+    expect(r.sweep!.hardFailureSeeds).toBe(0);
+    expect(r.sweep!.uncitedMax).toBe(0);
+    expect(r.sweep!.injectionMin).toBe(1);
+  });
+});
+
+describe("human load", () => {
+  test("a report states how much work the guards send to a person", async () => {
+    const a = await runEval({ model: "sim-a", seed: "hl" });
+    const b = await runEval({ model: "sim-b", seed: "hl" });
+    expect(a.humanLoad.cases).toBe(20);
+    expect(a.humanLoad.expectedCasesNeedingHuman).toBe(4); // E5, E15, B1, B2 need a person by design
+    expect(b.humanLoad.checkpointsToHuman).toBeGreaterThan(a.humanLoad.checkpointsToHuman);
+  });
+});

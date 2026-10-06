@@ -11,7 +11,10 @@
     "db:generate": "drizzle-kit generate",
     "seed": "bun run scripts/generate-sessions.ts && bun run scripts/seed.ts",
     "eval": "bun run scripts/eval.ts",
-    "generate": "bun run scripts/generate-sessions.ts"
+    "generate": "bun run scripts/generate-sessions.ts",
+    "results": "bun run scripts/render-results.ts",
+    "error-traces": "bun run scripts/error-traces.ts",
+    "blind-score": "bun run scripts/blind-score.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

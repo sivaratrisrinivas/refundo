@@ -215,3 +215,45 @@ describe("model B changes outputs only in the ways its error profile allows", ()
   });
 });
 
+
+describe("guards found by error analysis", () => {
+  test("a model may not call a Checkpoint delivered over a failed test", async () => {
+    const db = seededDb();
+    // The model says delivered for the false-completion Checkpoint (a failed login test, no rollback).
+    // ...and the claim check also missed the contradiction (called it unverifiable).
+    const lax = new Scripted(perfect, (task, out) =>
+      task === "verify" ? (out as { checkpointId: string; claims: { status: string }[] }[]).map((o) => (o.checkpointId === "S-E4-c3" ? { ...o, claims: o.claims.map((c) => ({ ...c, status: "unverifiable" })) } : o))
+      : task === "label" ? (out as { checkpointId: string; label: string }[]).map((l) => (l.checkpointId === "S-E4-c3" ? { ...l, label: "delivered", evidenceFields: ["agentClaimText", "filesChanged"], confidence: 0.9 } : l)) : out);
+    const s = caseOf("E4");
+    const d = await runCase(db, s.ticketId, { provider: lax });
+    const l = labelFor(d, s, 3)!;
+    expect(l.label).toBe("unknown");
+    expect(l.humanPrompt).toMatch(/test failed/);
+    expect(d.status).toBe("needs_human");
+  });
+
+  test("a false completion resting on missing files alone, with every test passing, is confirmed by a person before it moves money", async () => {
+    const db = seededDb();
+    const flip = new Scripted(perfect, (task, out) =>
+      task === "verify" ? (out as { checkpointId: string; claims: { status: string; evidence: string }[] }[]).map((o) => (o.checkpointId === "S-E1-c1" ? { ...o, claims: o.claims.map((c) => ({ ...c, status: "contradicted", evidence: "no changed file matches this claim" })) } : o))
+      : task === "label" ? (out as { checkpointId: string; label: string; evidenceFields: string[] }[]).map((l) => (l.checkpointId === "S-E1-c1" ? { ...l, label: "false_completion", evidenceFields: ["agentClaimText", "filesChanged"] } : l)) : out);
+    const d = await runCase(db, caseOf("E1").ticketId, { provider: flip });
+    const l = labelFor(d, caseOf("E1"), 1)!;
+    expect(l.label).toBe("unknown");
+    expect(l.humanPrompt).toMatch(/file evidence alone/);
+    expect(d.amountCents).toBe(0);
+  });
+
+  test("a person who confirms it moves the money", async () => {
+    const db = seededDb();
+    const flip = new Scripted(perfect, (task, out) =>
+      task === "verify" ? (out as { checkpointId: string; claims: { status: string; evidence: string }[] }[]).map((o) => (o.checkpointId === "S-E1-c1" ? { ...o, claims: o.claims.map((c) => ({ ...c, status: "contradicted", evidence: "no changed file matches this claim" })) } : o))
+      : task === "label" ? (out as { checkpointId: string; label: string; evidenceFields: string[] }[]).map((l) => (l.checkpointId === "S-E1-c1" ? { ...l, label: "false_completion", evidenceFields: ["agentClaimText", "filesChanged"] } : l)) : out);
+    const s = caseOf("E1");
+    await runCase(db, s.ticketId, { provider: flip });
+    const { overrideDecision } = await import("@/lib/pipeline/approve");
+    const r = await overrideDecision(db, { ticketId: s.ticketId, persona: "specialist", kind: "label", checkpointId: cpId(s, 1), to: "false_completion", reason: "confirmed: the feature file is missing" }, { provider: flip });
+    expect(r.ok).toBe(true);
+    expect(loadDecision(db, s.ticketId)!.amountCents).toBe(480);
+  });
+});

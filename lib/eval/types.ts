@@ -66,6 +66,21 @@ export interface EvalReport {
     modelRerun?: { against: ModelName; gapPoints: number; maxGapPoints: number; pass: boolean; otherCostPerCaseUsd: number; detail: string };
   };
   validator: { truePositiveRate: number; trueNegativeRate: number; bad: number; good: number };
+  /** Money-weighted error: how many cents of Credit were wrongly given or withheld across the graded Cases. */
+  moneyError: { overCreditCents: number; underCreditCents: number; expectedTotalCents: number };
+  /** The cost of the guards: how much work goes to a person. Money safety is bought with human review. */
+  humanLoad: { casesNeedingHuman: number; cases: number; checkpointsToHuman: number; checkpoints: number; expectedCasesNeedingHuman: number };
+  /** Per expected Label: how many Checkpoints carried it and how many the pipeline got right. */
+  perLabel: Record<string, { expected: number; matched: number }>;
+  /** The same suite over many seeds, because one seed is one draw of a Simulated model's mistakes. */
+  sweep?: {
+    seeds: number;
+    labelAgreement: { mean: number; min: number; max: number };
+    exactCreditMatch: { mean: number; min: number; max: number };
+    hardFailureSeeds: number;
+    uncitedMax: number;
+    injectionMin: number;
+  };
   hardFailures: string[];
   targetsMissed: string[];
 }

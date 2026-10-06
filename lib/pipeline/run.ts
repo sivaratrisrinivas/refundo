@@ -121,7 +121,8 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
         for (const raw of l.value) {
           if (!needModel.includes(raw.checkpointId) || labelByCp.has(raw.checkpointId)) continue;
           const cl = claims.get(raw.checkpointId);
-          labelByCp.set(raw.checkpointId, { ...validateModelLabel(raw, cl, policy.minConfidence), claims: cl });
+          const cp = c.checkpoints.find((k) => k.id === raw.checkpointId);
+          labelByCp.set(raw.checkpointId, { ...validateModelLabel(raw, cl, policy.minConfidence, cp ? { appTestPassed: cp.appTest.passed } : undefined), claims: cl });
         }
       }
     }
@@ -135,7 +136,7 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
     finalLabels.push({
       ...l,
       note: l.note ?? notes.get(cp.id),
-      ...(l.label === "unknown" && l.source !== "human" ? { humanPrompt: HUMAN_PROMPT } : {}),
+      ...(l.label === "unknown" && l.source !== "human" ? { humanPrompt: l.humanPrompt ?? HUMAN_PROMPT } : {}),
     });
   }
 

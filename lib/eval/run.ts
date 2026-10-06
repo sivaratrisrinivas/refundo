@@ -43,6 +43,8 @@ export type RunCaseFn = (db: Db, ticketId: string, deps: RunDeps) => Promise<Dec
 export interface EvalOptions {
   model: ModelName;
   seed?: string;
+  /** Also run this many extra seeds and report the spread. */
+  sweep?: number;
   /** Test seam: swap the pipeline under test, e.g. to inject a regression. */
   runCaseImpl?: RunCaseFn;
   db?: Db;
@@ -167,9 +169,40 @@ export async function runEval(opts: EvalOptions): Promise<EvalReport> {
       },
     },
     validator: { truePositiveRate: tpr, trueNegativeRate: tnr, bad: bad.length, good: good.length },
+    moneyError: {
+      overCreditCents: graded.reduce((a, s) => a + Math.max(0, s.actualAmountCents - s.expectedAmountCents), 0),
+      underCreditCents: graded.reduce((a, s) => a + Math.max(0, s.expectedAmountCents - s.actualAmountCents), 0),
+      expectedTotalCents: graded.reduce((a, s) => a + s.expectedAmountCents, 0),
+    },
+    humanLoad: {
+      casesNeedingHuman: graded.filter((x) => x.actualStatus === "needs_human").length,
+      cases: graded.length,
+      checkpointsToHuman: graded.reduce((a, x) => a + x.checkpoints.filter((c) => (c.actualLabel === "unknown" || c.actualLabel === "unresolved") && c.expectedLabel !== "unknown").length, 0),
+      checkpoints: graded.reduce((a, x) => a + x.checkpoints.length, 0),
+      expectedCasesNeedingHuman: graded.filter((x) => x.expectedStatus === "needs_human").length,
+    },
+    perLabel: perLabelRecall(graded),
     hardFailures: [], targetsMissed: [],
   };
+  if (opts.sweep && opts.sweep > 0) {
+    const la: number[] = [], ec: number[] = [];
+    let hardSeeds = 0, uncitedMax = 0, injectionMin = 1;
+    for (let i = 0; i < opts.sweep; i++) {
+      const r = await runEval({ model: opts.model, seed: `${seed}:sweep-${i}`, runCaseImpl: opts.runCaseImpl });
+      la.push(r.metrics.labelAgreement.value ?? 0);
+      ec.push(r.metrics.exactCreditMatch.value ?? 0);
+      if (r.hardFailures.length > 0) hardSeeds++;
+      uncitedMax = Math.max(uncitedMax, r.metrics.uncitedLabelsReachingUi.value ?? 0);
+      injectionMin = Math.min(injectionMin, r.metrics.injectionResistance.value ?? 1);
+    }
+    const spread = (v: number[]) => ({ mean: v.reduce((a, b) => a + b, 0) / v.length, min: Math.min(...v), max: Math.max(...v) });
+    report.sweep = { seeds: opts.sweep, labelAgreement: spread(la), exactCreditMatch: spread(ec), hardFailureSeeds: hardSeeds, uncitedMax, injectionMin };
+    if (hardSeeds > 0) report.metrics.uncitedLabelsReachingUi.detail = `${hardSeeds} of ${opts.sweep} extra seeds had a hard failure`;
+  }
   finalize(report);
+  if (report.sweep && report.sweep.hardFailureSeeds > 0 && report.hardFailures.length === 0) {
+    report.hardFailures.push(`hard metric failed on ${report.sweep.hardFailureSeeds} of ${report.sweep.seeds} extra seeds`);
+  }
   return report;
 }
 
@@ -185,6 +218,16 @@ async function withoutInjection(db: Db, run: RunCaseFn, ticketId: string, deps: 
   db.update(schema.tickets).set({ body: original }).where(eq(schema.tickets.id, ticketId)).run();
   await run(db, ticketId, deps);
   return clean;
+}
+
+export function perLabelRecall(sessions: SessionResult[]): Record<string, { expected: number; matched: number }> {
+  const out: Record<string, { expected: number; matched: number }> = {};
+  for (const s of sessions) for (const c of s.checkpoints) {
+    const e = (out[c.expectedLabel] ??= { expected: 0, matched: 0 });
+    e.expected++;
+    if (c.ok) e.matched++;
+  }
+  return out;
 }
 
 export function finalize(r: EvalReport): void {

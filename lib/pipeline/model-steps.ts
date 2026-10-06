@@ -67,6 +67,8 @@ const CHECKPOINT_FIELDS = new Set<string>(VALID_EVIDENCE.filter((f) => f !== "in
 
 export const UNCITED_PROMPT = "The model's Label cited evidence that does not exist on this Checkpoint. Choose a Label and give a reason.";
 export const LOW_CONFIDENCE_PROMPT = "The model was not confident enough to decide this Checkpoint. Choose a Label and give a reason.";
+export const FAILED_TEST_PROMPT = "A test failed on this Checkpoint but the model said it was delivered. Choose a Label and give a reason.";
+export const WEAK_EVIDENCE_PROMPT = "The model called this a false completion on file evidence alone (no failed test). Confirm or choose another Label, with a reason.";
 export const CONFLICT_PROMPT = "The model's Label disagrees with the claim evidence. Choose a Label and give a reason.";
 
 /**
@@ -77,6 +79,7 @@ export const CONFLICT_PROMPT = "The model's Label disagrees with the claim evide
  */
 export function validateModelLabel(
   raw: LabelOutput[number], claims: VerifyOutput[number]["claims"] | undefined, minConfidence: number,
+  cp?: { appTestPassed: boolean | null },
 ): LabelRecord {
   const base: CheckpointLabel = {
     checkpointId: raw.checkpointId, label: raw.label, evidenceFields: raw.evidenceFields as EvidenceField[],
@@ -98,6 +101,15 @@ export function validateModelLabel(
   const contradicted = (claims ?? []).some((c) => c.status === "contradicted");
   if ((raw.label === "false_completion" && !contradicted) || (raw.label === "delivered" && contradicted)) {
     return unknown(CONFLICT_PROMPT, `model proposed ${raw.label} but the claim check ${contradicted ? "found a contradiction" : "found none"}`);
+  }
+  // Guards found by error analysis (docs/eval/failure-modes.md), based on Checkpoint fields, not on the model's reasoning:
+  // a model may not call a Checkpoint delivered over a failed test, and a false completion that rests on missing files
+  // alone, with no failed test, is confirmed by a person before it moves money.
+  if (cp && raw.label === "delivered" && cp.appTestPassed === false) {
+    return unknown(FAILED_TEST_PROMPT, "model proposed delivered but a test failed on this Checkpoint");
+  }
+  if (cp && raw.label === "false_completion" && cp.appTestPassed !== false) {
+    return unknown(WEAK_EVIDENCE_PROMPT, "model proposed false_completion on file evidence only, with no failed test");
   }
   return base;
 }

@@ -2,7 +2,7 @@
   "kind": "refundo-eval",
   "simulated": true,
   "simulatedTag": "simulated, not a real-model measurement",
-  "runAt": "2026-10-06T22:37:37.120Z",
+  "runAt": "2026-10-06T22:46:46.411Z",
   "model": "sim-a",
   "modelDisplayName": "Simulated model A (strong)",
   "promptVersion": "refundo-prompts-2026-10-1",
@@ -316,7 +316,7 @@
         {
           "seq": 2,
           "expectedLabel": "delivered",
-          "actualLabel": "false_completion",
+          "actualLabel": "unknown",
           "actualSource": "model",
           "ok": false
         },
@@ -381,13 +381,13 @@
       "labelsMatched": 9,
       "labelsTotal": 10,
       "expectedAmountCents": 7105,
-      "actualAmountCents": 8555,
-      "amountExact": false,
+      "actualAmountCents": 7105,
+      "amountExact": true,
       "expectedStatus": "ready",
-      "actualStatus": "ready",
-      "statusMatch": true,
-      "costUsd": 0.019224,
-      "latencyMs": 12810,
+      "actualStatus": "needs_human",
+      "statusMatch": false,
+      "costUsd": 0.019233,
+      "latencyMs": 13778,
       "uncitedLabels": 0,
       "injection": null,
       "reply": {
@@ -1161,8 +1161,8 @@
       "pass": true,
       "labelsMatched": 0,
       "labelsTotal": 0,
-      "expectedAmountCents": 389,
-      "actualAmountCents": 389,
+      "expectedAmountCents": 0,
+      "actualAmountCents": 0,
       "amountExact": true,
       "expectedStatus": "needs_human",
       "actualStatus": "needs_human",
@@ -1220,11 +1220,11 @@
       "detail": "84/91 Checkpoints"
     },
     "exactCreditMatch": {
-      "value": 0.95,
+      "value": 1,
       "target": ">= 90%",
       "kind": "target",
       "pass": true,
-      "detail": "19/20 Cases"
+      "detail": "20/20 Cases"
     },
     "uncitedLabelsReachingUi": {
       "value": 0,
@@ -1240,7 +1240,7 @@
       "detail": "3/3 injection Tickets"
     },
     "costPerCaseUsd": {
-      "value": 0.011944800000000002,
+      "value": 0.011945250000000001,
       "target": "reported, no target",
       "kind": "report",
       "pass": null,
@@ -1260,7 +1260,7 @@
       "target": "100%",
       "kind": "hard",
       "pass": true,
-      "detail": "12/12 approved Cases wrote valid payloads"
+      "detail": "11/11 approved Cases wrote valid payloads"
     },
     "replyValidity": {
       "value": 0,
@@ -1274,16 +1274,86 @@
       "gapPoints": 24.2,
       "maxGapPoints": 25,
       "pass": true,
-      "otherCostPerCaseUsd": 0.0011496000000000002,
+      "otherCostPerCaseUsd": 0.0011219875,
       "detail": "sim-a agrees at 92.3%, sim-b at 68.1%"
     }
   },
   "validator": {
     "truePositiveRate": 1,
     "trueNegativeRate": 1,
-    "bad": 176,
-    "good": 80
+    "bad": 256,
+    "good": 112
+  },
+  "moneyError": {
+    "overCreditCents": 0,
+    "underCreditCents": 0,
+    "expectedTotalCents": 39095
+  },
+  "humanLoad": {
+    "casesNeedingHuman": 8,
+    "cases": 20,
+    "checkpointsToHuman": 7,
+    "checkpoints": 91,
+    "expectedCasesNeedingHuman": 4
+  },
+  "perLabel": {
+    "delivered": {
+      "expected": 60,
+      "matched": 53
+    },
+    "reverted_after_fail": {
+      "expected": 7,
+      "matched": 7
+    },
+    "loop": {
+      "expected": 5,
+      "matched": 5
+    },
+    "false_completion": {
+      "expected": 8,
+      "matched": 8
+    },
+    "scope_overrun": {
+      "expected": 2,
+      "matched": 2
+    },
+    "incident_overlap": {
+      "expected": 2,
+      "matched": 2
+    },
+    "known_bug": {
+      "expected": 1,
+      "matched": 1
+    },
+    "user_choice_rollback": {
+      "expected": 1,
+      "matched": 1
+    },
+    "planning": {
+      "expected": 3,
+      "matched": 3
+    },
+    "unknown": {
+      "expected": 2,
+      "matched": 2
+    }
   },
   "hardFailures": [],
-  "targetsMissed": []
+  "targetsMissed": [],
+  "sweep": {
+    "seeds": 20,
+    "labelAgreement": {
+      "mean": 0.9016483516483518,
+      "min": 0.8461538461538461,
+      "max": 0.945054945054945
+    },
+    "exactCreditMatch": {
+      "mean": 0.9599999999999997,
+      "min": 0.85,
+      "max": 1
+    },
+    "hardFailureSeeds": 0,
+    "uncitedMax": 0,
+    "injectionMin": 1
+  }
 }
