@@ -14,7 +14,8 @@
     "generate": "bun run scripts/generate-sessions.ts",
     "results": "bun run scripts/render-results.ts",
     "error-traces": "bun run scripts/error-traces.ts",
-    "blind-score": "bun run scripts/blind-score.ts"
+    "blind-score": "bun run scripts/blind-score.ts",
+    "roi": "bun run scripts/roi.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
