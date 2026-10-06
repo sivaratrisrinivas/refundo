@@ -77,13 +77,14 @@ export function resolveFinalLabel(
 export function allocateCents(total: number, weights: number[]): number[] {
   const sum = weights.reduce((a, b) => a + b, 0);
   if (sum <= 0 || total <= 0) return weights.map(() => 0);
-  const exact = weights.map((w) => (total * w) / sum);
-  const floors = exact.map(Math.floor);
+  // Integer arithmetic only, so ties are exact and never depend on float noise.
+  const floors = weights.map((w) => Math.floor((total * w) / sum));
+  const rems = weights.map((w) => (total * w) % sum);
   let left = total - floors.reduce((a, b) => a + b, 0);
-  const order = exact
-    .map((x, i) => ({ i, frac: x - Math.floor(x) }))
+  const order = rems
+    .map((rem, i) => ({ i, rem }))
     .filter(({ i }) => weights[i]! > 0)
-    .sort((a, b) => b.frac - a.frac || a.i - b.i);
+    .sort((a, b) => b.rem - a.rem || a.i - b.i);
   for (const { i } of order) {
     if (left <= 0) break;
     floors[i]! += 1;
