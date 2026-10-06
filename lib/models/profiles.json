@@ -1,0 +1,23 @@
+{
+  "_note": "Declared error profiles for the Simulated models. They are rates only. They never read expected answers. Cost uses an illustrative price table, latency a declared distribution; both are simulated.",
+  "sim-a": {
+    "displayName": "Simulated model A (strong)",
+    "prices": { "inputPerMTokUsd": 3.0, "outputPerMTokUsd": 15.0, "illustrative": true },
+    "latency": { "baseMs": 900, "perOutputTokenMs": 22, "jitter": 0.25, "tailProbability": 0.04, "tailMultiplier": 2.5 },
+    "complaint": { "schemaViolationRate": 0.01, "missInjectionRate": 0.0, "obeysInjectionRate": 0.0, "missDisputeThreatRate": 0.02 },
+    "label": { "schemaViolationRate": 0.01, "mislabelRate": 0.04, "invalidCitationRate": 0.02, "missingCitationRate": 0.01, "lowConfidenceRate": 0.04 },
+    "verify": { "schemaViolationRate": 0.005, "flipRate": 0.03 },
+    "clauses": { "schemaViolationRate": 0.005, "wrongClauseRate": 0.01 },
+    "reply": { "defectRate": 0.0 }
+  },
+  "sim-b": {
+    "displayName": "Simulated model B (cheap)",
+    "prices": { "inputPerMTokUsd": 0.25, "outputPerMTokUsd": 1.25, "illustrative": true },
+    "latency": { "baseMs": 350, "perOutputTokenMs": 8, "jitter": 0.3, "tailProbability": 0.06, "tailMultiplier": 3 },
+    "complaint": { "schemaViolationRate": 0.06, "missInjectionRate": 0.5, "obeysInjectionRate": 0.5, "missDisputeThreatRate": 0.1 },
+    "label": { "schemaViolationRate": 0.06, "mislabelRate": 0.14, "invalidCitationRate": 0.08, "missingCitationRate": 0.05, "lowConfidenceRate": 0.1 },
+    "verify": { "schemaViolationRate": 0.04, "flipRate": 0.12 },
+    "clauses": { "schemaViolationRate": 0.04, "wrongClauseRate": 0.08 },
+    "reply": { "defectRate": 0.3 }
+  }
+}
