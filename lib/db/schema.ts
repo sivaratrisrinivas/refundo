@@ -161,7 +161,7 @@ export const evalRuns = sqliteTable("eval_runs", {
   expected: text("expected", { mode: "json" }).$type<unknown>().notNull(),
   actual: text("actual", { mode: "json" }).$type<unknown>().notNull(),
   pass: integer("pass", { mode: "boolean" }).notNull(),
-  costCents: integer("cost_cents").notNull(),
+  costUsd: real("cost_usd").notNull().default(0),
   latencyMs: integer("latency_ms").notNull(),
   createdAt: text("created_at").notNull(),
 });
