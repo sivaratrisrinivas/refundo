@@ -32,7 +32,7 @@ export type LabelRecord = CheckpointLabel & {
 };
 
 export interface Override {
-  kind: "label" | "amount";
+  kind: "label" | "amount" | "reply";
   checkpointId?: string;
   from: string | number;
   to: string | number;

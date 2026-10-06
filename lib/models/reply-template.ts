@@ -56,7 +56,7 @@ export function renderReply(d: ReplyDecision, defects: TemplateDefects = {}): st
       if (defects.dropLine === i) return;
       out.push(`- Checkpoint ${l.seq} (${REASON[l.label] ?? "did not deliver"}): ${usd(l.creditCents)}`);
     });
-    out.push("", `Total credit: ${usd(d.amountCents)}.`);
+    out.push("", d.status === "recommend_only" ? `Total recommended credit: ${usd(d.amountCents)}.` : `Total credit: ${usd(d.amountCents)}.`);
     if (d.clamped) {
       out.push(`That is the most we can add on your plan right now; the work was worth ${usd(d.subtotalCents)} in total.`);
     }

@@ -11,6 +11,7 @@ import { applyAmountOverride, latestAmountOverride, overrideLabels } from "./ove
 import { detectInjection, asTicketData } from "./injection";
 import { complaintSchema } from "@/lib/models/schemas";
 import { callValidated, labelSchema, normalizeClaims, toLabelInput, toVerifyInput, validateModelLabel, verifySchema } from "./model-steps";
+import { buildReplyDecision, draftReply, validateReply } from "./reply";
 import { runSignals } from "./signals";
 import { loadDecision, saveDecision } from "./store";
 import type { DecisionRecord, LabelRecord, TraceStep } from "./types";
@@ -168,13 +169,32 @@ export async function runCase(db: Db, ticketId: string, deps: RunDeps = {}): Pro
   }
   trace.push({ step: "price", ok: true, note: `${priced.status}, ${amountCents} cents` });
 
-  const d: DecisionRecord = {
+  const d0: DecisionRecord = {
     ...base,
     labels: finalLabels, clauses: priced.clauses, lines, amountCents, subtotalCents: priced.subtotalCents,
     capStatus: priced.capStatus, status, needsHuman, needsLead, routeTo: priced.routeTo, fileLinear: priced.fileLinear,
     injectionDetected, complaint, reply: null, notes: decisionNotes, unresolved, trace,
     costUsd: trace.reduce((s, t) => s + (t.costUsd ?? 0), 0), latencyMs: trace.reduce((s, t) => s + (t.latencyMs ?? 0), 0),
     ceilingCents: priced.ceilingCents, headroomCents: priced.headroomCents,
+  };
+  // Stage 8: draft the reply. A specialist's edit is kept while it still validates.
+  const rd = buildReplyDecision(c, d0);
+  let reply: string | null = null;
+  const edit = [...overrides].reverse().find((o) => o.kind === "reply");
+  if (edit && validateReply(String(edit.to), rd).ok) reply = String(edit.to);
+  else if (deps.provider) {
+    const out = await draftReply(deps.provider, rd, `${deps.seed ?? "refundo-seed-1"}:${ticketId}`);
+    trace.push(out.trace);
+    reply = out.reply;
+    if (!out.reply) {
+      d0.needsHuman = true;
+      if (d0.status !== "recommend_only") d0.status = "needs_human";
+      d0.notes.push("No reply draft passed validation, so a person must write the reply.");
+    }
+  }
+  const d: DecisionRecord = {
+    ...d0, reply, trace,
+    costUsd: trace.reduce((s, t) => s + (t.costUsd ?? 0), 0), latencyMs: trace.reduce((s, t) => s + (t.latencyMs ?? 0), 0),
   };
   saveDecision(db, d);
   db.update(schema.tickets).set({ status: needsLead ? "needs_lead" : "decided" }).where(eq(schema.tickets.id, ticketId)).run();

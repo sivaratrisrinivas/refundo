@@ -6,6 +6,7 @@ export class OverrideError extends Error {}
 
 /** An Override always carries a reason. */
 export function validateOverride(o: Pick<Override, "kind" | "reason" | "to" | "checkpointId">, ceilingCents: number | null): void {
+  if (o.kind === "reply") return; // a reply edit is a draft change, not a deviation from policy
   if (!o.reason || o.reason.trim().length < 3) throw new OverrideError("an Override needs a written reason");
   if (o.kind === "label") {
     if (!o.checkpointId) throw new OverrideError("a label Override needs a Checkpoint");
