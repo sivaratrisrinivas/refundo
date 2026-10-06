@@ -1,4 +1,4 @@
-import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 /**
  * Ten tables (ADR 0001). JSON columns are JSON text. Money is integer cents.
@@ -107,6 +107,21 @@ export const decisions = sqliteTable(
     injectionDetected: integer("injection_detected", { mode: "boolean" }).notNull().default(false),
     reply: text("reply"),
     notes: text("notes", { mode: "json" }).$type<string[]>().notNull(),
+    subtotalCents: integer("subtotal_cents").notNull().default(0),
+    needsHuman: integer("needs_human", { mode: "boolean" }).notNull().default(false),
+    needsLead: integer("needs_lead", { mode: "boolean" }).notNull().default(false),
+    routeTo: text("route_to"),
+    fileLinear: integer("file_linear", { mode: "boolean" }).notNull().default(false),
+    ceilingCents: integer("ceiling_cents"),
+    headroomCents: integer("headroom_cents"),
+    /** Checkpoint ids that no rule settled and no model/human has labeled yet. */
+    unresolved: text("unresolved", { mode: "json" }).$type<string[]>().notNull().default([]),
+    priorCredit: text("prior_credit", { mode: "json" }).$type<{ amountCents: number; approvedOn: string } | null>(),
+    overrides: text("overrides", { mode: "json" }).$type<unknown[]>().notNull().default([]),
+    /** One record per pipeline step: step name, ok, simulated cost and latency, attempts. */
+    trace: text("trace", { mode: "json" }).$type<unknown[]>().notNull().default([]),
+    costUsd: real("cost_usd").notNull().default(0),
+    latencyMs: integer("latency_ms").notNull().default(0),
     createdAt: text("created_at").notNull(),
     approvedAt: text("approved_at"),
   },
