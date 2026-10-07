@@ -6,7 +6,7 @@ draft only. nothing has been posted. replace [demo link] (x counts any link as 2
 
 @amasad when an agent run goes wrong the customer still pays, and a specialist reads the whole session by hand to decide on a credit. half an hour a ticket.
 
-i built refundo: models label the evidence, code sets the amount, a person approves in one click.
+i built refundo. models label the evidence, code sets the amount, a person approves.
 
 30s demo: [demo link]
 
