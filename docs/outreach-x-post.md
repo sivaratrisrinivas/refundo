@@ -1,6 +1,6 @@
 # x post draft tagging amjad masad
 
-draft only. nothing has been posted. replace [demo link] (x counts any link as 23 characters), attach the 30 second video (docs/demo/demo-30s.webm), and check the handle before posting.
+draft only. nothing has been posted. replace [demo link] (x counts any link as 23 characters), attach the 30 second video (docs/demo/demo-30s.mp4), and check the handle before posting.
 
 ## main
 
